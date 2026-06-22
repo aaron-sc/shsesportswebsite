@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Esports | SHS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #03040A;
+      --bg2:       #060812;
+      --red:       #FF4655;
+      --red-dim:   rgba(255,70,85,0.15);
+      --cyan:      #00D4FF;
+      --cyan-dim:  rgba(0,212,255,0.1);
+      --purple:    #7B2FFF;
+      --gold:      #FFD060;
+      --pine:      #162A13;
+      --pine-mid:  #1E3A1A;
+      --sky:       #0A1828;
+      --text:      #E8E8F0;
+      --muted:     #5A5A7A;
+      --card:      rgba(255,255,255,0.028);
+      --border:    rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS ─── */
+    #bgCanvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* scanlines */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none; z-index: 9999;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 2.5rem;
+      background: rgba(4,4,12,0.88);
+      backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid rgba(255,70,85,0.18);
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.05rem; font-weight: 900;
+      letter-spacing: 0.12em;
+      color: var(--text); text-decoration: none;
+    }
+    .nav-logo em { color: var(--red); font-style: normal; }
+
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    /* hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 4px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); transition: all 0.3s;
+    }
+
+    /* mobile menu */
+    .mobile-menu {
+      display: none; position: fixed; top: 60px; left: 0; right: 0; z-index: 199;
+      background: rgba(4,4,12,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      flex-direction: column; gap: 1.2rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      transition: color 0.25s;
+    }
+    .mobile-menu a:hover { color: var(--red); }
+
+    /* ─── HERO ─── */
+    #home {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 7rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+
+    /* hero grid */
+    #home::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,70,85,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,70,85,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+
+    /* hero glow blobs */
+    .hero-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px);
+      pointer-events: none; z-index: 0;
+    }
+    .hero-blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,70,85,0.12), transparent 70%);
+      top: 10%; left: -10%;
+    }
+    .hero-blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(123,47,255,0.1), transparent 70%);
+      top: 20%; right: -5%;
+    }
+    .hero-blob-3 {
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(22,60,20,0.18), transparent 70%);
+      bottom: 5%; left: 20%;
+    }
+
+    /* ─── MONTANA MOUNTAINS ─── */
+    .hero-mountains {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      width: 100%; z-index: 1; pointer-events: none;
+    }
+    .hero-mountains svg { display: block; width: 100%; height: auto; }
+
+    .hero-tag {
+      position: relative; z-index: 1;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; color: var(--cyan);
+      letter-spacing: 0.35em; text-transform: uppercase;
+      margin-bottom: 1.6rem;
+      opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+
+    .hero-wordmark {
+      position: relative; z-index: 1;
+      margin-bottom: 0.3rem;
+      opacity: 0; animation: fadeUp 0.7s ease 0.4s forwards;
+    }
+
+    .hero-wordmark-inner {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 900; line-height: 1;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      position: relative; display: inline-block;
+    }
+
+    .hero-wordmark-inner::before,
+    .hero-wordmark-inner::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0; width: 100%;
+      font-family: 'Orbitron', monospace;
+      font-size: inherit; font-weight: inherit;
+      letter-spacing: inherit; line-height: inherit;
+      pointer-events: none;
+    }
+    .hero-wordmark-inner::before {
+      color: var(--cyan); opacity: 0;
+      animation: glitchA 6s infinite 1s;
+    }
+    .hero-wordmark-inner::after {
+      color: var(--red); opacity: 0;
+      animation: glitchB 6s infinite 1s;
+    }
+
+    .hero-esports {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1rem, 3vw, 1.8rem);
+      font-weight: 400; letter-spacing: 0.55em;
+      color: var(--red);
+      text-shadow: 0 0 30px rgba(255,70,85,0.6), 0 0 60px rgba(255,70,85,0.2);
+      margin-bottom: 2.5rem; position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.7s ease 0.6s forwards;
+    }
+
+    .hero-divider {
+      display: flex; align-items: center; gap: 1rem;
+      justify-content: center; margin-bottom: 2rem;
+      position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.7s ease 0.75s forwards;
+    }
+    .hero-divider-line {
+      width: 80px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--red));
+    }
+    .hero-divider-line.r { transform: scaleX(-1); }
+    .hero-divider-diamond {
+      width: 8px; height: 8px;
+      background: var(--red); transform: rotate(45deg);
+      box-shadow: 0 0 12px var(--red);
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 1.6rem;
+      border: 1px solid rgba(255,70,85,0.35);
+      border-radius: 2px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.2em;
+      color: var(--red); background: rgba(255,70,85,0.06);
+      position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.7s ease 0.9s forwards;
+    }
+    .hero-badge-dot {
+      width: 7px; height: 7px;
+      background: var(--red); border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.4rem; color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.25em;
+      animation: bob 2.5s ease infinite;
+      z-index: 2;
+    }
+    .scroll-cue::after {
+      content: '';
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    /* ─── SHARED SECTION ─── */
+    section { padding: 7rem 2rem; }
+    .container { max-width: 1160px; margin: 0 auto; }
+
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      letter-spacing: 0.45em; text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700; line-height: 1.15;
+    }
+    .section-title .accent { color: var(--red); }
+
+    .section-rule {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.8rem; margin-top: 1rem;
+    }
+    .section-rule::before, .section-rule::after {
+      content: ''; height: 1px; width: 50px;
+      background: linear-gradient(to right, transparent, var(--red));
+    }
+    .section-rule::after { transform: scaleX(-1); }
+    .rule-diamond {
+      width: 6px; height: 6px;
+      background: var(--red); transform: rotate(45deg);
+    }
+
+    /* ─── TEAM ─── */
+    #team { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.2rem;
+      max-width: 1000px; margin: 0 auto;
+    }
+
+    .player-card {
+      position: relative; padding: 2rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px; text-align: center;
+      cursor: default; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    .player-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .player-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(255,70,85,0.07), transparent 70%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .player-card:hover { transform: translateY(-6px); border-color: rgba(255,70,85,0.3); box-shadow: 0 16px 50px rgba(255,70,85,0.12); }
+    .player-card:hover::before { transform: scaleX(1); }
+    .player-card:hover::after { opacity: 1; }
+
+    .player-number-badge {
+      position: absolute; top: 10px; right: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem; color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .player-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem; font-weight: 700;
+      margin: 0 auto 1rem;
+      position: relative; z-index: 1;
+    }
+    .player-avatar-ring {
+      position: absolute; inset: -3px; border-radius: 50%;
+      border: 1px solid rgba(255,70,85,0.4);
+    }
+
+    .av-1 { background: linear-gradient(135deg, #FF4655, #7B2FFF); }
+    .av-2 { background: linear-gradient(135deg, #7B2FFF, #00D4FF); }
+    .av-3 { background: linear-gradient(135deg, #00D4FF, #1a8cff); }
+    .av-4 { background: linear-gradient(135deg, #FF9900, #FF4655); }
+    .av-5 { background: linear-gradient(135deg, #FF4655, #00D4FF); }
+
+    .player-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.82rem; font-weight: 700;
+      letter-spacing: 0.04em; margin-bottom: 0.3rem;
+      position: relative; z-index: 1;
+    }
+    .player-game {
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── SPONSORS ─── */
+    #sponsors { background: var(--bg); }
+
+    .sponsors-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem; max-width: 740px; margin: 0 auto;
+    }
+
+    .sponsor-card {
+      position: relative; padding: 2.5rem 2rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px; text-align: center;
+      transition: all 0.3s; overflow: hidden;
+    }
+    .sponsor-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.07), transparent 70%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .sponsor-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.3); box-shadow: 0 0 40px rgba(0,212,255,0.1); }
+    .sponsor-card:hover::before { opacity: 1; }
+
+    .sponsor-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+    .sponsor-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--cyan); letter-spacing: 0.04em;
+    }
+    .sponsor-type {
+      font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.12em; margin-top: 0.3rem;
+      text-transform: uppercase;
+    }
+
+    /* ─── DONORS ─── */
+    #donors { background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%); }
+
+    .donors-intro {
+      text-align: center; max-width: 580px;
+      margin: 0 auto 3rem;
+      color: var(--muted); font-size: 1.05rem; line-height: 1.8;
+    }
+
+    .tabs {
+      display: flex; gap: 0.5rem;
+      justify-content: center; flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .tab {
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.14em;
+      cursor: pointer; transition: all 0.25s;
+      text-transform: uppercase;
+    }
+    .tab:hover { color: var(--red); border-color: rgba(255,70,85,0.4); }
+    .tab.active {
+      color: var(--red); border-color: var(--red);
+      background: rgba(255,70,85,0.08);
+    }
+
+    .panel { display: none; max-width: 780px; margin: 0 auto; animation: fadeUp 0.35s ease; }
+    .panel.active { display: block; }
+
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-head-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 600;
+    }
+    .panel-raised {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem; color: var(--cyan);
+      padding: 0.2rem 0.65rem;
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 2px;
+    }
+
+    .donor-list { display: grid; gap: 0.45rem; }
+
+    .donor-row {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr auto;
+      align-items: center; gap: 0.8rem;
+      padding: 0.7rem 1rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .donor-row:hover {
+      border-color: rgba(255,70,85,0.18);
+      background: rgba(255,70,85,0.025);
+    }
+
+    .donor-rank {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--muted);
+      text-align: right;
+    }
+    .donor-rank.gold { color: #FFD060; }
+    .donor-rank.silver { color: #B0B8CC; }
+    .donor-rank.bronze { color: #CD7F32; }
+
+    .donor-name { font-size: 0.95rem; font-weight: 500; }
+
+    .donor-pip {
+      width: 4px; height: 4px;
+      background: var(--red); border-radius: 50%; opacity: 0.4;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 3.5rem 2rem;
+      background: var(--bg2);
+      border-top: 1px solid rgba(255,70,85,0.1);
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem; font-weight: 900;
+      margin-bottom: 0.4rem;
+    }
+    .footer-logo em { color: var(--red); font-style: normal; }
+    .footer-school {
+      color: var(--muted); font-size: 0.78rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+    }
+    .footer-hr {
+      height: 1px; background: var(--border);
+      max-width: 320px; margin: 2rem auto;
+    }
+    .footer-copy {
+      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em;
+    }
+
+    /* ─── REVEAL ─── */
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.75); }
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(9px); }
+    }
+    @keyframes glitchA {
+      0%,92%,100% { opacity: 0; transform: translate(0); clip-path: none; }
+      93%  { opacity: 0.6; transform: translate(-4px,  1px); clip-path: inset(10% 0 70% 0); }
+      94%  { opacity: 0.6; transform: translate( 3px, -1px); clip-path: inset(50% 0 30% 0); }
+      95%  { opacity: 0.6; transform: translate(-2px,  2px); clip-path: inset(80% 0  5% 0); }
+      96%  { opacity: 0; }
+    }
+    @keyframes glitchB {
+      0%,94%,100% { opacity: 0; transform: translate(0); clip-path: none; }
+      95%  { opacity: 0.5; transform: translate( 4px, -2px); clip-path: inset(20% 0 60% 0); }
+      96%  { opacity: 0.5; transform: translate(-3px,  1px); clip-path: inset(60% 0 20% 0); }
+      97%  { opacity: 0; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── ABOUT ─── */
+    #about { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%); }
+
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: start;
+      max-width: 1060px; margin: 0 auto;
+    }
+
+    .about-text p {
+      color: var(--muted); font-size: 1.05rem; line-height: 1.9;
+      margin-bottom: 1.1rem;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .games-col-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      letter-spacing: 0.38em; text-transform: uppercase;
+      margin-bottom: 1rem; display: block;
+    }
+
+    .games-grid { display: grid; gap: 0.55rem; }
+
+    .game-tile {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.65rem 1rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 3px; transition: transform 0.2s, border-color 0.2s;
+    }
+    .game-tile.active { border-color: rgba(255,70,85,0.35); background: rgba(255,70,85,0.04); }
+    .game-tile:hover { transform: translateX(5px); }
+
+    .game-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.14em;
+      padding: 0.15rem 0.5rem; border-radius: 2px;
+      text-transform: uppercase; white-space: nowrap;
+    }
+    .game-tile.active .game-status { color: var(--red); border: 1px solid rgba(255,70,85,0.45); }
+    .game-tile.soon  .game-status { color: var(--muted); border: 1px solid var(--border); }
+
+    .game-name { font-size: 0.92rem; font-weight: 600; letter-spacing: 0.03em; }
+    .game-tile.active .game-name { color: var(--text); }
+    .game-tile.soon  .game-name  { color: var(--muted); }
+
+    /* ─── STORY ─── */
+    #story { background: var(--bg2); }
+
+    .story-content { max-width: 860px; margin: 0 auto; }
+
+    .story-text {
+      color: var(--muted); font-size: 1.05rem; line-height: 1.9;
+      margin-bottom: 3rem;
+    }
+    .story-text strong { color: var(--text); font-weight: 600; }
+
+    .achievements {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;
+    }
+
+    .achievement {
+      padding: 2rem 1.5rem; text-align: center;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 3px; position: relative; overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .achievement::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+    }
+    .achievement:hover { transform: translateY(-5px); box-shadow: 0 14px 42px rgba(255,70,85,0.1); }
+
+    .achievement-season {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.58rem; color: var(--muted);
+      letter-spacing: 0.18em; margin-bottom: 0.4rem;
+    }
+    .achievement-num {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900; color: var(--red);
+      text-shadow: 0 0 30px rgba(255,70,85,0.4);
+      line-height: 1; margin-bottom: 0.5rem;
+    }
+    .achievement-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    /* nationals callout */
+    .nationals-banner {
+      margin-top: 1.5rem; padding: 2rem 2.5rem;
+      background: rgba(255,70,85,0.04);
+      border: 1px solid rgba(255,70,85,0.35);
+      border-radius: 3px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .nationals-banner::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,70,85,0.06), transparent);
+      animation: shimmer 3.5s ease infinite;
+    }
+    .nationals-badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      letter-spacing: 0.45em; text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .nationals-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+      font-weight: 900; color: var(--text);
+      text-shadow: 0 0 30px rgba(255,70,85,0.35);
+      margin-bottom: 0.4rem; letter-spacing: 0.06em;
+    }
+    .nationals-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem; color: var(--muted);
+      letter-spacing: 0.2em;
+    }
+    @keyframes shimmer {
+      0%   { left: -100%; }
+      100% { left:  100%; }
+    }
+
+    /* coaching staff */
+    .staff-divider {
+      display: flex; align-items: center; gap: 1rem;
+      max-width: 1000px; margin: 3rem auto 2rem;
+    }
+    .staff-divider-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+    .staff-divider-line.r {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+    .staff-divider-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.66rem; color: var(--muted);
+      letter-spacing: 0.3em; text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .coaches-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem; max-width: 480px; margin: 0 auto;
+    }
+
+    .coach-card {
+      position: relative; padding: 2rem 1rem;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 3px; text-align: center;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+    .coach-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .coach-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.3); box-shadow: 0 14px 42px rgba(0,212,255,0.1); }
+    .coach-card:hover::before { transform: scaleX(1); }
+
+    .coach-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem; font-weight: 700;
+      margin: 0 auto 1rem; position: relative;
+    }
+    .ca-1 { background: linear-gradient(135deg, #00D4FF, #1B4FFF); }
+    .ca-2 { background: linear-gradient(135deg, #1B4FFF, #7B2FFF); }
+    .coach-avatar-ring {
+      position: absolute; inset: -3px; border-radius: 50%;
+      border: 1px solid rgba(0,212,255,0.4);
+    }
+    .coach-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.04em; margin-bottom: 0.3rem;
+    }
+    .coach-role {
+      font-size: 0.72rem; color: var(--cyan);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .coach-org {
+      font-size: 0.62rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    /* ─── MISSION / VISION ─── */
+    #mission { background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%); }
+
+    .mv-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; max-width: 1060px; margin: 0 auto;
+    }
+
+    .mv-col-label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--cyan);
+      letter-spacing: 0.38em; text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    .mv-cards { display: grid; gap: 0.85rem; }
+
+    .mv-card {
+      padding: 1.1rem 1.2rem 1.1rem 1.4rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--red);
+      border-radius: 3px;
+      font-size: 0.95rem; color: var(--muted); line-height: 1.75;
+      transition: background 0.25s, border-left-color 0.25s;
+    }
+    .mv-card:hover { background: rgba(255,70,85,0.03); border-left-color: var(--cyan); }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--bg); }
+
+    .contact-wrap { max-width: 760px; margin: 0 auto; }
+
+    .contact-intro {
+      text-align: center; color: var(--muted);
+      font-size: 1.05rem; line-height: 1.85;
+      margin-bottom: 2.5rem;
+    }
+
+    .form-shell {
+      border: 1px solid var(--border); border-radius: 4px;
+      overflow: hidden; background: #ffffff;
+    }
+    .form-shell iframe { display: block; width: 100%; height: 680px; border: none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .mv-grid    { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media (max-width: 640px) {
+      .achievements { grid-template-columns: 1fr; }
+    }
+
+    /* ─── RESPONSIVE (existing breakpoints below) ─── */
+    @media (max-width: 900px) {
+      .team-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .sponsors-grid { grid-template-columns: 1fr; }
+      section { padding: 5rem 1.5rem; }
+      .tab { font-size: 0.65rem; padding: 0.45rem 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<div class="content">
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="#home" class="nav-logo">SENTINEL</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#team">Roster</a></li>
+      <li><a href="#sponsors">Sponsors</a></li>
+      <li><a href="#donors">Donors</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about"    onclick="closeMobile()">About</a>
+    <a href="#team"     onclick="closeMobile()">Roster</a>
+    <a href="#sponsors" onclick="closeMobile()">Sponsors</a>
+    <a href="#donors"   onclick="closeMobile()">Donors</a>
+    <a href="#contact"  onclick="closeMobile()">Contact</a>
+  </div>
+
+  <!-- ── HERO ── -->
+  <section id="home">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-blob hero-blob-3"></div>
+
+    <div class="hero-tag">// Missoula, Montana &nbsp;·&nbsp; Sentinel High School &nbsp;·&nbsp; Esports //</div>
+
+    <div class="hero-wordmark">
+      <span class="hero-wordmark-inner" data-text="SENTINEL">SENTINEL</span>
+    </div>
+
+    <div class="hero-esports">E S P O R T S</div>
+
+    <div class="hero-divider">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-diamond"></div>
+      <div class="hero-divider-line r"></div>
+    </div>
+
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      VALORANT &nbsp;·&nbsp; ACTIVE ROSTER
+    </div>
+
+    <!-- Montana mountain silhouette -->
+    <div class="hero-mountains" aria-hidden="true">
+      <svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gMtFar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0C1E32" stop-opacity="0.65"/>
+            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="gMtMid" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#091A14" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="gMtNear" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0C2010" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Far range (distant Rocky peaks, blue-grey) -->
+        <path d="M0,260 L0,148 Q80,118 160,110 Q240,102 320,90 Q400,78 460,82 Q520,86 580,70 Q640,54 700,60 Q760,66 820,52 Q880,38 940,50 Q1000,62 1060,72 Q1130,83 1220,95 Q1340,108 1440,115 L1440,260 Z" fill="url(#gMtFar)"/>
+
+        <!-- Mid range (Mission Mts / Mount Jumbo silhouette) -->
+        <path d="M0,260 L0,200 Q60,186 120,180 Q180,174 240,170 Q300,166 360,162 Q420,158 470,165 Q520,172 570,165 Q620,158 680,150 Q740,142 800,148 Q860,154 920,148 Q980,142 1040,152 Q1100,162 1160,170 Q1240,178 1340,190 L1440,198 L1440,260 Z" fill="url(#gMtMid)"/>
+
+        <!-- Near treeline (Ponderosa pine / Douglas fir silhouette) -->
+        <!-- Left hillside trees -->
+        <g fill="#0E1F0F">
+          <!-- tree cluster left-far -->
+          <polygon points="18,232 3,255 33,255"/>
+          <polygon points="18,242 0,255 36,255"/>
+          <rect x="14" y="255" width="8" height="5" fill="#130C04"/>
+
+          <polygon points="55,222 38,250 72,250"/>
+          <polygon points="55,233 35,250 75,250"/>
+          <polygon points="55,244 32,250 78,250"/>
+          <rect x="51" y="250" width="8" height="6" fill="#130C04"/>
+
+          <polygon points="95,218 77,248 113,248"/>
+          <polygon points="95,229 73,248 117,248"/>
+          <polygon points="95,240 70,248 120,248"/>
+          <rect x="91" y="248" width="8" height="7" fill="#130C04"/>
+
+          <polygon points="135,225 119,252 151,252"/>
+          <polygon points="135,236 116,252 154,252"/>
+          <polygon points="135,246 113,252 157,252"/>
+          <rect x="131" y="252" width="8" height="5" fill="#130C04"/>
+
+          <polygon points="175,220 158,248 192,248"/>
+          <polygon points="175,231 155,248 195,248"/>
+          <polygon points="175,242 152,248 198,248"/>
+          <rect x="171" y="248" width="8" height="7" fill="#130C04"/>
+
+          <polygon points="215,228 200,254 230,254"/>
+          <polygon points="215,238 197,254 233,254"/>
+          <rect x="211" y="254" width="8" height="6" fill="#130C04"/>
+        </g>
+
+        <!-- Right hillside trees -->
+        <g fill="#0D1E0E">
+          <polygon points="1230,230 1215,255 1245,255"/>
+          <polygon points="1230,240 1212,255 1248,255"/>
+          <rect x="1226" y="255" width="8" height="5" fill="#130C04"/>
+
+          <polygon points="1272,220 1255,250 1289,250"/>
+          <polygon points="1272,231 1252,250 1292,250"/>
+          <polygon points="1272,242 1249,250 1295,250"/>
+          <rect x="1268" y="250" width="8" height="7" fill="#130C04"/>
+
+          <polygon points="1315,224 1298,252 1332,252"/>
+          <polygon points="1315,235 1295,252 1335,252"/>
+          <polygon points="1315,246 1292,252 1338,252"/>
+          <rect x="1311" y="252" width="8" height="6" fill="#130C04"/>
+
+          <polygon points="1358,218 1340,248 1376,248"/>
+          <polygon points="1358,229 1337,248 1379,248"/>
+          <polygon points="1358,240 1334,248 1382,248"/>
+          <rect x="1354" y="248" width="8" height="7" fill="#130C04"/>
+
+          <polygon points="1400,225 1384,252 1416,252"/>
+          <polygon points="1400,236 1381,252 1419,252"/>
+          <polygon points="1400,247 1378,252 1422,252"/>
+          <rect x="1396" y="252" width="8" height="6" fill="#130C04"/>
+
+          <polygon points="1430,232 1418,255 1442,255"/>
+          <polygon points="1430,242 1415,255 1445,255"/>
+          <rect x="1426" y="255" width="7" height="5" fill="#130C04"/>
+        </g>
+
+        <!-- Ground fill -->
+        <rect x="0" y="254" width="1440" height="6" fill="#03040A"/>
+      </svg>
+    </div>
+
+    <div class="scroll-cue">SCROLL</div>
+  </section>
+
+  <!-- ── ABOUT ── -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Who We Are //</span>
+        <h2 class="section-title">ABOUT <span class="accent">US</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>Sentinel High School Esports is a group of students passionate about competitive gaming. Our members are dedicated to improving their skills, working together as a team, and enjoying the experience of esports.</p>
+          <p>We foster a fun, inclusive, and growth-focused environment where players can learn, compete, and connect.</p>
+        </div>
+
+        <div class="reveal" style="transition-delay:.1s">
+          <span class="games-col-label">// What We Play //</span>
+          <div class="games-grid">
+            <div class="game-tile active">
+              <span class="game-status">Active</span>
+              <span class="game-name">VALORANT</span>
+            </div>
+            <div class="game-tile soon">
+              <span class="game-status">Considering</span>
+              <span class="game-name">Marvel Rivals</span>
+            </div>
+            <div class="game-tile soon">
+              <span class="game-status">Considering</span>
+              <span class="game-name">Smash Bros</span>
+            </div>
+            <div class="game-tile soon">
+              <span class="game-status">Considering</span>
+              <span class="game-name">Rocket League</span>
+            </div>
+            <div class="game-tile soon">
+              <span class="game-status">Considering</span>
+              <span class="game-name">Overwatch 2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── STORY ── -->
+  <section id="story">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Our Journey //</span>
+        <h2 class="section-title">OUR <span class="accent">START</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="story-content">
+        <div class="story-text reveal">
+          <p>Sentinel HS Esports was started by <strong>Aaron Santa Cruz</strong>, a former University of Montana VALORANT player, alongside <strong>Head Coach Travis Benson</strong> (MCPS staff). Unofficially beginning in <strong>2024</strong>, the program was mostly participating in VALORANT's Premier feature — an in-game tournament system.</p>
+          <p>After a restart in <strong>January 2025</strong>, the program officially began. With VALORANT as the main title and Aaron's competitive experience, the team entered the <strong>Montana High School Championship Series (MHSCS)</strong>. Facing teams from across Montana, Sentinel finished <strong>1st in the regular season</strong>, then secured <strong>3rd place</strong> at the playoff finals.</p>
+          <p>In the <strong>2025–2026 season</strong>, the team continued to grow — finishing <strong>2nd in the regular season</strong> and going on to compete at <strong>State, held at the University of Montana</strong>, where they earned <strong>2nd place</strong>. The team is now headed to <strong>Nationals in July</strong>, competing in <strong>Boise, Idaho</strong>.</p>
+        </div>
+
+        <div class="achievements reveal" style="transition-delay:.15s">
+          <div class="achievement">
+            <div class="achievement-season">2024–25</div>
+            <div class="achievement-num">1ST</div>
+            <div class="achievement-label">Regular Season<br>MHSCS</div>
+          </div>
+          <div class="achievement">
+            <div class="achievement-season">2024–25</div>
+            <div class="achievement-num">3RD</div>
+            <div class="achievement-label">Playoff Finals<br>MHSCS</div>
+          </div>
+          <div class="achievement">
+            <div class="achievement-season">2025–26</div>
+            <div class="achievement-num">2ND</div>
+            <div class="achievement-label">Regular Season<br>MHSCS</div>
+          </div>
+          <div class="achievement">
+            <div class="achievement-season">2025–26</div>
+            <div class="achievement-num">2ND</div>
+            <div class="achievement-label">State Finals<br>@ Univ. of Montana</div>
+          </div>
+        </div>
+
+        <div class="nationals-banner reveal" style="transition-delay:.28s">
+          <div class="nationals-badge">// Next Up //</div>
+          <div class="nationals-title">NATIONALS 2026</div>
+          <div class="nationals-sub">July 2026 &nbsp;·&nbsp; Boise, Idaho</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MISSION / VISION ── -->
+  <section id="mission">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Purpose &amp; Direction //</span>
+        <h2 class="section-title">MISSION &amp; <span class="accent">VISION</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="mv-grid">
+        <div class="reveal">
+          <span class="mv-col-label">// Mission //</span>
+          <div class="mv-cards">
+            <div class="mv-card">"To provide a structured and inclusive esports program that fosters teamwork, leadership, and academic responsibility for all students at Sentinel High School."</div>
+            <div class="mv-card">"To engage students through competitive gaming, encouraging personal growth, digital citizenship, and school pride."</div>
+            <div class="mv-card">"To develop future-ready skills through esports — critical thinking, communication, and resilience — while creating a fun and supportive environment."</div>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:.15s">
+          <span class="mv-col-label">// Vision //</span>
+          <div class="mv-cards">
+            <div class="mv-card">"To inspire a generation of students to see esports as a path to lifelong learning, leadership, and opportunity."</div>
+            <div class="mv-card">"To create a lasting culture where esports at Sentinel High School is recognized as a meaningful, respected, and impactful part of student life."</div>
+            <div class="mv-card">"To build bridges between competitive gaming and academic excellence, preparing students for a future shaped by technology and teamwork."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TEAM ── -->
+  <section id="team">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Active Roster //</span>
+        <h2 class="section-title">MEET THE <span class="accent">TEAM</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="team-grid">
+
+        <div class="player-card reveal" style="transition-delay:.05s">
+          <div class="player-number-badge">01</div>
+          <div class="player-avatar av-1">
+            V
+            <div class="player-avatar-ring"></div>
+          </div>
+          <div class="player-name">V1LE</div>
+          <div class="player-game">Valorant</div>
+        </div>
+
+        <div class="player-card reveal" style="transition-delay:.12s">
+          <div class="player-number-badge">02</div>
+          <div class="player-avatar av-2">
+            F
+            <div class="player-avatar-ring"></div>
+          </div>
+          <div class="player-name">FlimseyDoor</div>
+          <div class="player-game">Valorant</div>
+        </div>
+
+        <div class="player-card reveal" style="transition-delay:.19s">
+          <div class="player-number-badge">03</div>
+          <div class="player-avatar av-3">
+            N
+            <div class="player-avatar-ring"></div>
+          </div>
+          <div class="player-name">Nimbus</div>
+          <div class="player-game">Valorant</div>
+        </div>
+
+        <div class="player-card reveal" style="transition-delay:.26s">
+          <div class="player-number-badge">04</div>
+          <div class="player-avatar av-4">
+            T
+            <div class="player-avatar-ring"></div>
+          </div>
+          <div class="player-name">toast</div>
+          <div class="player-game">Valorant</div>
+        </div>
+
+        <div class="player-card reveal" style="transition-delay:.33s">
+          <div class="player-number-badge">05</div>
+          <div class="player-avatar av-5">
+            R
+            <div class="player-avatar-ring"></div>
+          </div>
+          <div class="player-name">RamnNoodles09</div>
+          <div class="player-game">Valorant</div>
+        </div>
+
+      </div>
+
+      <!-- Coaching Staff -->
+      <div class="staff-divider reveal">
+        <div class="staff-divider-line"></div>
+        <div class="staff-divider-label">Coaching Staff</div>
+        <div class="staff-divider-line r"></div>
+      </div>
+
+      <div class="coaches-grid">
+        <div class="coach-card reveal" style="transition-delay:.05s">
+          <div class="coach-avatar ca-1">
+            A
+            <div class="coach-avatar-ring"></div>
+          </div>
+          <div class="coach-name">Aaron Santa Cruz</div>
+          <div class="coach-role">Valorant Coach</div>
+        </div>
+        <div class="coach-card reveal" style="transition-delay:.12s">
+          <div class="coach-avatar ca-2">
+            T
+            <div class="coach-avatar-ring"></div>
+          </div>
+          <div class="coach-name">Travis Benson</div>
+          <div class="coach-role">Head Coach</div>
+          <div class="coach-org">MCPS Staff</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── SPONSORS ── -->
+  <section id="sponsors">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Partners //</span>
+        <h2 class="section-title">OUR <span class="accent">SPONSORS</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="sponsors-grid">
+        <div class="sponsor-card reveal">
+          <div class="sponsor-icon">🏦</div>
+          <div class="sponsor-name">First Interstate Bank</div>
+          <div class="sponsor-type">Official Banking Partner</div>
+        </div>
+        <div class="sponsor-card reveal" style="transition-delay:.1s">
+          <div class="sponsor-icon">💳</div>
+          <div class="sponsor-name">Whitefish Credit Union</div>
+          <div class="sponsor-type">Official Financial Partner</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DONORS ── -->
+  <section id="donors">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Hall of Support //</span>
+        <h2 class="section-title">OUR <span class="accent">DONORS</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <p class="donors-intro reveal">
+        Thank you to everyone who has made what we do possible.
+        We will continue to update this list with previous donors and the associated campaign.
+      </p>
+
+      <div class="tabs reveal">
+        <button class="tab active" onclick="showTab('dc',   this)">Donors Choose</button>
+        <button class="tab"        onclick="showTab('sr25', this)">Snap! Raise 2025</button>
+        <button class="tab"        onclick="showTab('s26',  this)">2025–26 Season</button>
+        <button class="tab"        onclick="showTab('n26',  this)">2026 Nationals</button>
+      </div>
+
+      <!-- Donors Choose -->
+      <div class="panel active" id="panel-dc">
+        <div class="panel-head">
+          <div class="panel-head-title">Donors Choose</div>
+          <div class="panel-raised">RAISED · $2,618</div>
+        </div>
+        <div class="donor-list">
+          <div class="donor-row"><span class="donor-rank gold">#1</span><span class="donor-name">Toni Swedberg</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank silver">#2</span><span class="donor-name">David Lande &amp; Becky Lande</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank bronze">#3</span><span class="donor-name">Camdin Dirnberger</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#4</span><span class="donor-name">Cynthia</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#5</span><span class="donor-name">Anonymous</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#6</span><span class="donor-name">Anonymous</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#7</span><span class="donor-name">Anonymous</span><div class="donor-pip"></div></div>
+        </div>
+      </div>
+
+      <!-- Snap! Raise 2025 — sorted: $250, $200, $100×4, $50, $35×3 -->
+      <div class="panel" id="panel-sr25">
+        <div class="panel-head">
+          <div class="panel-head-title">Snap! Raise 2025</div>
+          <div class="panel-raised">RAISED · $1,005</div>
+        </div>
+        <div class="donor-list">
+          <div class="donor-row"><span class="donor-rank gold">#1</span><span class="donor-name">Earle Shields</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank silver">#2</span><span class="donor-name">Crystal Gomez</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank bronze">#3</span><span class="donor-name">Susan Hazlett</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#4</span><span class="donor-name">Michael Nyman</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#5</span><span class="donor-name">Hannah &amp; Shaun Santa Cruz</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#6</span><span class="donor-name">Chad Orebaugh</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#7</span><span class="donor-name">Holly and Todd Mickel</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#8</span><span class="donor-name">Larry Farnes</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#9</span><span class="donor-name">Heather Nichols</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#10</span><span class="donor-name">Barrett Frizzell</span><div class="donor-pip"></div></div>
+        </div>
+      </div>
+
+      <!-- 2025-26 Season — sorted by total per donor:
+           Sally Mickel $102, then $100×4, $50×3, $40, $35 -->
+      <div class="panel" id="panel-s26">
+        <div class="panel-head">
+          <div class="panel-head-title">2025–2026 Season</div>
+          <div class="panel-raised">ONGOING</div>
+        </div>
+        <div class="donor-list">
+          <div class="donor-row"><span class="donor-rank gold">#1</span><span class="donor-name">Sally Mickel</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank silver">#2</span><span class="donor-name">Hannah Santa Cruz</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank bronze">#3</span><span class="donor-name">Tony Cooley</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#4</span><span class="donor-name">Susan Hazlett</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#5</span><span class="donor-name">Brian Zacherl</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#6</span><span class="donor-name">David Stark</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#7</span><span class="donor-name">Larry Farnes</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#8</span><span class="donor-name">Heidi Beery</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#9</span><span class="donor-name">John Weisbrich</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#10</span><span class="donor-name">Terry Hamilton</span><div class="donor-pip"></div></div>
+        </div>
+      </div>
+
+      <!-- 2026 Nationals — sorted by total per donor:
+           Viki Stansbury $120, Kathy Benson $100, Sally Mickel $51, then $50×6 -->
+      <div class="panel" id="panel-n26">
+        <div class="panel-head">
+          <div class="panel-head-title">2026 Nationals</div>
+          <div class="panel-raised">ONGOING</div>
+        </div>
+        <div class="donor-list">
+          <div class="donor-row"><span class="donor-rank gold">#1</span><span class="donor-name">Viki Stansbury</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank silver">#2</span><span class="donor-name">Kathy Benson</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank bronze">#3</span><span class="donor-name">Sally Mickel</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#4</span><span class="donor-name">Miri Disney-Faller</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#5</span><span class="donor-name">Larry Farnes</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#6</span><span class="donor-name">Anna Breese</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#7</span><span class="donor-name">Stephanie Topp</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#8</span><span class="donor-name">Deborah Elliott</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#9</span><span class="donor-name">Hannah Santa Cruz</span><div class="donor-pip"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Get In Touch //</span>
+        <h2 class="section-title">CONTACT <span class="accent">US</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <div class="contact-wrap">
+        <p class="contact-intro reveal">
+          Looking to learn more, sponsor us, expand our program, or something similar?<br>
+          Fill out the form below and we'll be in touch as soon as we can.
+        </p>
+        <div class="form-shell reveal" style="transition-delay:.1s">
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLScJLlUPhC_OECrHcreIXH3qIbniUu1FolzOrWRLVx5NDHhOBA/viewform?embedded=true"
+            title="Contact Sentinel Esports"
+            loading="lazy">
+            Loading form…
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-logo">SENTINEL</div>
+    <div class="footer-school">Sentinel High School &nbsp;·&nbsp; Missoula, MT &nbsp;·&nbsp; Esports</div>
+    <div class="footer-hr"></div>
+    <div class="footer-copy">© 2025–2026 Sentinel Esports &nbsp;·&nbsp; All rights reserved</div>
+  </footer>
+
+</div><!-- /content -->
+
+<script>
+/* ── CANVAS: BIG SKY STARFIELD + PARTICLES ── */
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, stars = [], pts = [];
+
+  const COLORS = [
+    [255, 70,  85],
+    [0,  212, 255],
+    [123, 47, 255],
+  ];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function init() {
+    resize();
+
+    /* Montana big-sky starfield */
+    stars = [];
+    const sc = Math.min(Math.floor(W * H / 2800), 220);
+    for (let i = 0; i < sc; i++) {
+      stars.push({
+        x:     Math.random() * W,
+        y:     Math.random() * H * 0.82,
+        r:     Math.random() * 1.1 + 0.15,
+        baseA: Math.random() * 0.55 + 0.08,
+        phase: Math.random() * Math.PI * 2,
+        freq:  Math.random() * 0.6 + 0.2,
+      });
+    }
+
+    /* tech network particles */
+    pts = [];
+    const n = Math.min(Math.floor(W * H / 13000), 70);
+    for (let i = 0; i < n; i++) {
+      const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+      pts.push({
+        x:  Math.random() * W,
+        y:  Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        r:  Math.random() * 1.1 + 0.4,
+        a:  Math.random() * 0.4 + 0.08,
+        c
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const t = performance.now() * 0.001;
+
+    /* ── stars (Big Sky Country) ── */
+    stars.forEach(s => {
+      const a = s.baseA * (0.55 + 0.45 * Math.sin(t * s.freq + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,225,255,${a})`;
+      ctx.fill();
+    });
+
+    /* ── particle network ── */
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < 130) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(255,70,85,${0.06 * (1 - d / 130)})`;
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.c[0]},${p.c[1]},${p.c[2]},${p.a})`;
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  init();
+  draw();
+})();
+
+/* ── SCROLL REVEAL ── */
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+/* ── TABS ── */
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+/* ── MOBILE MENU ── */
+const ham  = document.getElementById('hamburger');
+const menu = document.getElementById('mobileMenu');
+ham.addEventListener('click', () => menu.classList.toggle('open'));
+function closeMobile() { menu.classList.remove('open'); }
+</script>
+</body>
+</html>
