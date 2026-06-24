@@ -1055,43 +1055,190 @@
     }
 
     /* ─── 1. INTRO SCREEN ─── */
+    /* ─── INTRO: TACTICAL BRIEF ─── */
     #intro-screen {
-      position: fixed; inset: 0; z-index: 10000;
-      background: var(--bg);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 0.6rem;
-      transition: opacity 0.9s ease, visibility 0.9s ease;
+      position: fixed; inset: 0; z-index: 10000; overflow: hidden;
+      background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: transform 0.18s cubic-bezier(0.4,0,1,1), opacity 0.14s ease, visibility 0s linear 0.18s;
+      transform-origin: center center;
     }
-    #intro-screen.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    #intro-screen.gone { transform: scaleY(0.02); opacity: 0; visibility: hidden; pointer-events: none; }
 
-    .intro-wordmark {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(2.8rem, 8vw, 6rem);
-      font-weight: 900; letter-spacing: 0.1em;
-      background: linear-gradient(120deg, #FFD060 0%, #F0A500 30%, #FFD060 60%, #C084FC 100%);
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-size: 200% 100%;
-      filter: drop-shadow(0 0 40px rgba(255,208,96,0.55));
-      clip-path: inset(0 100% 0 0);
-      animation: intro-wipe 1s cubic-bezier(0.77,0,0.175,1) 0.2s forwards;
+    /* Background tactical grid */
+    .is-grid {
+      position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.10) 1px, transparent 1px);
+      background-size: 52px 52px;
+      opacity: 0; transition: opacity 0.7s ease;
     }
-    @keyframes intro-wipe { to { clip-path: inset(0 0% 0 0); } }
+    .is-grid.on { opacity: 1; }
 
-    .intro-line {
-      width: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      animation: intro-line-expand 0.7s ease 1.1s forwards;
-      box-shadow: 0 0 8px var(--gold);
+    /* Diagonal grid accent lines */
+    .is-grid::after {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(45deg, rgba(255,208,96,0.025) 1px, transparent 1px),
+        linear-gradient(-45deg, rgba(255,208,96,0.025) 1px, transparent 1px);
+      background-size: 104px 104px;
     }
-    @keyframes intro-line-expand { to { width: 320px; } }
 
-    .intro-sub {
+    /* Single-pass scan sweep */
+    .is-sweep {
+      position: absolute; left: 0; right: 0; height: 3px; top: -3px;
+      background: linear-gradient(180deg, rgba(192,132,252,0.55) 0%, rgba(192,132,252,0) 100%);
+      box-shadow: 0 0 18px 4px rgba(192,132,252,0.35);
+      pointer-events: none; z-index: 6;
+    }
+    .is-sweep.go { animation: isSweep 0.55s cubic-bezier(0.4,0,0.6,1) 0.08s forwards; }
+    @keyframes isSweep { to { top: 100vh; } }
+
+    /* Corner brackets — animate from 0 size to full */
+    .is-cn {
+      position: absolute; z-index: 4; pointer-events: none;
+      border-color: rgba(255,208,96,0.65); border-style: solid;
+      width: 0; height: 0; opacity: 0;
+      transition: width 0.35s ease, height 0.35s ease, opacity 0.2s ease;
+    }
+    .is-cn.tl { top: 20px; left: 20px; border-width: 1px 0 0 1px; }
+    .is-cn.tr { top: 20px; right: 20px; border-width: 1px 1px 0 0; }
+    .is-cn.bl { bottom: 20px; left: 20px; border-width: 0 0 1px 1px; }
+    .is-cn.br { bottom: 20px; right: 20px; border-width: 0 1px 1px 0; }
+    .is-cn.on { width: 28px; height: 28px; opacity: 1; }
+
+    /* Side data streams */
+    .is-stream {
+      position: absolute; top: 50%; transform: translateY(-50%);
       font-family: 'Share Tech Mono', monospace;
-      font-size: clamp(0.65rem, 1.5vw, 0.9rem);
-      letter-spacing: 0.55em; color: var(--purple);
-      text-shadow: 0 0 20px rgba(192,132,252,0.9);
-      opacity: 0; animation: fadeUp 0.5s ease 1.3s forwards;
+      font-size: 0.52rem; line-height: 2; letter-spacing: 0.08em;
+      color: rgba(192,132,252,0.3);
+      width: 110px; z-index: 3; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .is-stream-l { left: 24px; text-align: left; }
+    .is-stream-r { right: 24px; text-align: right; }
+    .is-stream.on { opacity: 1; }
+    .is-stream > div { transition: color 0.15s; }
+    .is-stream > div.hot { color: rgba(255,208,96,0.65); }
+
+    /* Center compound: reticle + logo overlap in same grid cell */
+    .is-compound {
+      display: grid; place-items: center; position: relative; z-index: 2;
+    }
+    .is-compound > * { grid-area: 1/1; }
+
+    /* Targeting reticle */
+    .is-ret-wrap {
+      width: min(320px, 62vw); height: min(320px, 62vw);
+      opacity: 0; transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .is-ret-wrap.on  { opacity: 1; }
+    .is-ret-wrap.out { opacity: 0; transform: scale(0.55); }
+
+    .is-ring {
+      fill: none; stroke: rgba(255,208,96,0.5); stroke-width: 0.8;
+      stroke-dasharray: 754; stroke-dashoffset: 754;
+      filter: drop-shadow(0 0 5px rgba(255,208,96,0.45));
+      transition: stroke-dashoffset 0.75s cubic-bezier(0.4,0,0.2,1);
+    }
+    .is-ring.draw { stroke-dashoffset: 0; }
+
+    /* Crosshair spokes */
+    .is-spoke {
+      stroke: rgba(192,132,252,0.45); stroke-width: 0.6;
+      stroke-dasharray: 62; stroke-dashoffset: 62;
+      transition: stroke-dashoffset 0.28s ease;
+    }
+    .is-spoke.draw { stroke-dashoffset: 0; }
+
+    /* Reticle tick dots */
+    .is-tick { fill: rgba(255,208,96,0.7); opacity: 0; transition: opacity 0.2s ease; }
+    .is-tick.on { opacity: 1; }
+
+    /* Orbit labels (rotated text on sides of reticle) */
+    .is-orb { font-size: 9px; fill: rgba(192,132,252,0.32); font-family: 'Share Tech Mono', monospace; letter-spacing: 0.1em; opacity: 0; transition: opacity 0.3s ease; }
+    .is-orb.on { opacity: 1; }
+
+    /* Small rotating dashes around ring */
+    @keyframes orbitSpin { to { transform: rotate(360deg); transform-origin: 150px 150px; } }
+    .is-orbit-dash { animation: orbitSpin 12s linear infinite; }
+
+    /* Pulsing center target pip */
+    @keyframes pipPulse {
+      0%, 100% { r: 3; opacity: 0.9; }
+      50% { r: 5; opacity: 0.4; }
+    }
+    .is-pip { fill: #FFD060; filter: drop-shadow(0 0 4px #FFD060); opacity: 0; transition: opacity 0.2s; animation: pipPulse 1.2s ease infinite; }
+    .is-pip.on { opacity: 0.9; }
+
+    /* Arc indicator (top-right quadrant outline) */
+    .is-arc {
+      fill: none; stroke: rgba(255,208,96,0.18); stroke-width: 12;
+      stroke-dasharray: 188; stroke-dashoffset: 188;
+      transition: stroke-dashoffset 0.45s ease 0.3s;
+    }
+    .is-arc.draw { stroke-dashoffset: 0; }
+
+    /* Main wordmark — starts micro, expands to full */
+    .is-wm {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.8rem, 8.5vw, 6rem);
+      font-weight: 900; letter-spacing: 0.2em; white-space: nowrap;
+      background: linear-gradient(120deg, #FFD060 0%, #C084FC 50%, #FFD060 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 38px rgba(192,132,252,0.55)) drop-shadow(0 0 70px rgba(255,208,96,0.12));
+      transform: scale(0.18); opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.34,1.45,0.64,1), opacity 0.38s ease;
+    }
+    .is-wm.expand { transform: scale(1); opacity: 1; }
+
+    /* Bloom burst when logo snaps to full size */
+    @keyframes wmBloom {
+      0%   { filter: drop-shadow(0 0 38px rgba(192,132,252,0.55)) brightness(3.5) saturate(0); }
+      100% { filter: drop-shadow(0 0 38px rgba(192,132,252,0.55)) drop-shadow(0 0 70px rgba(255,208,96,0.12)) brightness(1) saturate(1); }
+    }
+    .is-wm.bloom { animation: wmBloom 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+    /* Divider */
+    .is-divider {
+      width: 0; height: 1px; margin: 0.9rem 0;
+      background: linear-gradient(90deg, transparent, #FFD060, #C084FC, transparent);
+      box-shadow: 0 0 10px rgba(255,208,96,0.55);
+      transition: width 0.65s cubic-bezier(0.4,0,0.2,1);
+    }
+    /* Subtitle */
+    .is-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(0.55rem, 1.3vw, 0.72rem);
+      letter-spacing: 0.48em; color: #C084FC;
+      text-shadow: 0 0 18px rgba(192,132,252,0.8);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+
+    /* Status bar */
+    .is-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 36px; z-index: 5;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 26px;
+      border-top: 1px solid rgba(124,58,237,0.15);
+      background: rgba(0,0,0,0.45);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.51rem;
+      letter-spacing: 0.14em; color: rgba(192,132,252,0.4);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .is-bar.on { opacity: 1; }
+    .is-bar-l { display: flex; align-items: center; gap: 0.5rem; }
+    .is-bar-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.8); animation: barDotPulse 1s ease infinite; }
+    @keyframes barDotPulse { 50% { opacity: 0.3; } }
+    .is-bar-r { color: rgba(192,132,252,0.28); }
+
+    /* Scanline overlay texture */
+    .is-lines {
+      position: absolute; inset: 0; z-index: 7; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
     }
 
     /* ─── 2. SCROLL PROGRESS BAR ─── */
@@ -1228,16 +1375,149 @@
       section { padding: 5rem 1.5rem; }
       .tab { font-size: 0.65rem; padding: 0.45rem 0.85rem; }
     }
+
+    /* ── F1: CUSTOM SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--deep), var(--gold)); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--violet), var(--gold)); }
+
+
+    /* ── F3: HERO TITLE GLITCH ── */
+    @keyframes hGlitch {
+      0%,100%  { clip-path: none; transform: none; filter: none; }
+      8%       { clip-path: inset(22% 0 58% 0); transform: translate(-5px); filter: hue-rotate(85deg) brightness(1.7); }
+      14%      { clip-path: inset(58% 0 18% 0); transform: translate(4px); filter: hue-rotate(-20deg); }
+      18%      { clip-path: none; transform: none; filter: none; }
+      20%      { clip-path: inset(38% 0 42% 0); transform: translate(-2px); filter: brightness(2.2); }
+      22%,100% { clip-path: none; transform: none; filter: none; }
+    }
+    .hero-wordmark-inner.glitching { animation: hGlitch 0.38s steps(1) forwards; }
+
+    /* ── F4: FILM GRAIN ── */
+    #grain {
+      position: fixed; inset: 0; z-index: 9998; pointer-events: none; opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      animation: grainShift 0.1s steps(1) infinite;
+    }
+    @keyframes grainShift {
+      0%  { background-position: 0 0; }       25% { background-position: -55px 35px; }
+      50% { background-position: 40px -60px; } 75% { background-position: -20px -25px; }
+    }
+
+    /* ── F5: CURSOR SPOTLIGHT ── */
+    #cursor-lens { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+
+    /* ── F6: CROSSHAIR ON HERO ── */
+    #crosshair { position: fixed; width: 0; height: 0; z-index: 9997; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+    .ch-h { position: absolute; width: 24px; height: 1px; background: rgba(255,208,96,0.8); top: 0; left: -12px; box-shadow: 0 0 6px rgba(255,208,96,0.5); }
+    .ch-v { position: absolute; width: 1px; height: 24px; background: rgba(255,208,96,0.8); top: -12px; left: 0; box-shadow: 0 0 6px rgba(255,208,96,0.5); }
+    .ch-ring { position: absolute; width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,208,96,0.6); top: -5px; left: -5px; }
+    #home { cursor: none; }
+
+    /* ── F7: ANIMATED SECTION DIVIDERS ── */
+    .section-divider {
+      height: 1px; position: relative; overflow: hidden;
+      background: rgba(124,58,237,0.06);
+    }
+    .section-divider::after {
+      content: ''; position: absolute; top: 0; height: 1px; width: 35%;
+      background: linear-gradient(90deg, transparent, var(--violet), var(--gold), var(--violet), transparent);
+      animation: scanDiv 3.8s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(255,208,96,0.4);
+    }
+    @keyframes scanDiv { from { left: -35%; } to { left: 100%; } }
+
+    /* ── F8: LIVE CLOCK ── */
+    #live-clock {
+      position: fixed; bottom: 0.65rem; left: 1.8rem; z-index: 296;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.53rem;
+      letter-spacing: 0.1em; color: rgba(192,132,252,0.35);
+      pointer-events: none; line-height: 1.5;
+    }
+
+    /* ── F10: NAV SEASON BADGE ── */
+    .nav-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.1em; color: rgba(255,208,96,0.55);
+      padding: 0.28rem 0.65rem; border: 1px solid rgba(255,208,96,0.18);
+      border-radius: 20px; margin-left: 1rem; white-space: nowrap;
+    }
+    .nav-badge-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.85);
+      animation: pulseDot 1.8s ease infinite;
+    }
+    @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+    @media (max-width: 900px) { .nav-badge { display: none; } }
   </style>
 </head>
 <body>
 <div id="intro-screen">
-  <div class="intro-wordmark">SENTINEL</div>
-  <div class="intro-line"></div>
-  <div class="intro-sub">ESPORTS &nbsp;·&nbsp; MISSOULA, MT</div>
+  <div class="is-grid" id="isGrid"></div>
+  <div class="is-sweep" id="isSweep" aria-hidden="true"></div>
+  <div class="is-lines" aria-hidden="true"></div>
+
+  <div class="is-cn tl" id="isCnTL"></div>
+  <div class="is-cn tr" id="isCnTR"></div>
+  <div class="is-cn bl" id="isCnBL"></div>
+  <div class="is-cn br" id="isCnBR"></div>
+
+  <div class="is-stream is-stream-l" id="isStreamL" aria-hidden="true"></div>
+  <div class="is-stream is-stream-r" id="isStreamR" aria-hidden="true"></div>
+
+  <div class="is-compound">
+    <div class="is-ret-wrap" id="isRet">
+      <svg viewBox="0 0 300 300" width="100%" height="100%" overflow="visible">
+        <!-- Outer guide arc (top-right fill) -->
+        <circle class="is-arc" cx="150" cy="150" r="138" stroke-dashoffset="188" transform="rotate(-90 150 150)"/>
+        <!-- Main ring -->
+        <circle class="is-ring" id="isRing" cx="150" cy="150" r="120"/>
+        <!-- Crosshair spokes -->
+        <line class="is-spoke" id="isSp1" x1="150" y1="18"  x2="150" y2="80"/>
+        <line class="is-spoke" id="isSp2" x1="150" y1="220" x2="150" y2="282"/>
+        <line class="is-spoke" id="isSp3" x1="18"  y1="150" x2="80"  y2="150"/>
+        <line class="is-spoke" id="isSp4" x1="220" y1="150" x2="282" y2="150"/>
+        <!-- Tick marks -->
+        <circle class="is-tick" id="isTk1" cx="150" cy="18"  r="2.5"/>
+        <circle class="is-tick" id="isTk2" cx="150" cy="282" r="2.5"/>
+        <circle class="is-tick" id="isTk3" cx="18"  cy="150" r="2.5"/>
+        <circle class="is-tick" id="isTk4" cx="282" cy="150" r="2.5"/>
+        <!-- Small rotating orbit dashes -->
+        <g class="is-orbit-dash">
+          <line stroke="rgba(255,208,96,0.25)" stroke-width="1" x1="150" y1="28" x2="150" y2="36"/>
+          <line stroke="rgba(255,208,96,0.25)" stroke-width="1" x1="272" y1="150" x2="264" y2="150"/>
+          <line stroke="rgba(192,132,252,0.2)" stroke-width="1" x1="150" y1="264" x2="150" y2="272"/>
+          <line stroke="rgba(192,132,252,0.2)" stroke-width="1" x1="28" y1="150" x2="36" y2="150"/>
+        </g>
+        <!-- Center pip -->
+        <circle class="is-pip" id="isPip" cx="150" cy="150" r="3"/>
+        <!-- Orbit text labels -->
+        <text class="is-orb" id="isOrbL" x="12" y="154" text-anchor="middle" transform="rotate(-90 12 150)">45.860°N · 108.530°W</text>
+        <text class="is-orb" id="isOrbR" x="288" y="154" text-anchor="middle" transform="rotate(90 288 150)">MISSOULA · MONTANA</text>
+      </svg>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2;pointer-events:none;">
+      <div class="is-wm" id="isWm">SENTINEL</div>
+      <div class="is-divider" id="isDivider"></div>
+      <div class="is-sub" id="isSub">ESPORTS &nbsp;·&nbsp; MISSOULA, MT</div>
+    </div>
+  </div>
+
+  <div class="is-bar" id="isBar">
+    <div class="is-bar-l"><div class="is-bar-dot"></div><span id="isStatus">INITIALIZING SYSTEMS</span></div>
+    <div class="is-bar-r">SENTINEL HS &nbsp;·&nbsp; 2025–2026</div>
+  </div>
 </div>
 <div id="progress-bar"></div>
 <canvas id="bgCanvas"></canvas>
+<div id="grain" aria-hidden="true"></div>
+<div id="cursor-lens" aria-hidden="true"></div>
+<div id="crosshair" aria-hidden="true"><div class="ch-h"></div><div class="ch-v"></div><div class="ch-ring"></div></div>
+<div id="live-clock" aria-hidden="true"></div>
 
 <div class="content">
 
@@ -1251,6 +1531,7 @@
       <li><a href="#donors">Donors</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
+    <div class="nav-badge"><span class="nav-badge-dot"></span>SEASON LIVE</div>
     <button class="hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -1922,7 +2203,7 @@ document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
       el.textContent = full.slice(0, ++i);
       if (i >= full.length) clearInterval(t);
     }, 38);
-  }, 3400);
+  }, 3600);
 })();
 
 /* ── 3D CARD TILT ── */
@@ -1990,13 +2271,128 @@ document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
   for (let i = 0; i < 6; i++) spawn();
 })();
 
-/* ── FEATURE 1: INTRO SCREEN ── */
+/* ── INTRO: TACTICAL BRIEF ── */
 (function() {
   document.body.style.overflow = 'hidden';
+
+  const sc   = document.getElementById('intro-screen');
+  const grid = document.getElementById('isGrid');
+  const sw   = document.getElementById('isSweep');
+  const cns  = ['isCnTL','isCnTR','isCnBL','isCnBR'].map(id => document.getElementById(id));
+  const stL  = document.getElementById('isStreamL');
+  const stR  = document.getElementById('isStreamR');
+  const ret  = document.getElementById('isRet');
+  const ring = document.getElementById('isRing');
+  const spokes = ['isSp1','isSp2','isSp3','isSp4'].map(id => document.getElementById(id));
+  const ticks  = ['isTk1','isTk2','isTk3','isTk4'].map(id => document.getElementById(id));
+  const pip  = document.getElementById('isPip');
+  const orbL = document.getElementById('isOrbL');
+  const orbR = document.getElementById('isOrbR');
+  const wm   = document.getElementById('isWm');
+  const div  = document.getElementById('isDivider');
+  const sub  = document.getElementById('isSub');
+  const bar  = document.getElementById('isBar');
+  const stat = document.getElementById('isStatus');
+
+  const leftLines  = ['45.860°N','108.530°W','ALT  3209FT','PING   8MS','LOSS  0.0%','TEAM ACTIVE','MTB   100%','LINK SECURE'];
+  const rightLines = ['VALORANT','COMP RANK','ROSTER 5/5','ACE  READY','FLEX QUEUE','STRATS LOCK','SOVA  MAIN','JETT  LOCK'];
+  const msgs = ['INITIALIZING SYSTEMS','LOADING ROSTER DATA','ESTABLISHING LINK','SYNCING HUD OVERLAY','ALL SYSTEMS NOMINAL','▮ READY TO DEPLOY'];
+
+  function buildStream(el, lines) {
+    el.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+  }
+
+  // Rolling status messages
+  let mi = 0;
+  let msgIv;
+  function startMsgs() {
+    msgIv = setInterval(() => {
+      stat.textContent = msgs[Math.min(++mi, msgs.length - 1)];
+      if (mi >= msgs.length - 1) clearInterval(msgIv);
+    }, 310);
+  }
+
+  // Occasionally flash a "hot" data line in each stream
+  function hotFlash(el) {
+    const rows = el.querySelectorAll('div');
+    if (!rows.length) return;
+    const idx = Math.floor(Math.random() * rows.length);
+    rows[idx].classList.add('hot');
+    setTimeout(() => rows[idx].classList.remove('hot'), 260);
+  }
+
+  // T+80ms: grid fades in, sweep starts
   setTimeout(() => {
-    document.getElementById('intro-screen').classList.add('gone');
-    document.body.style.overflow = '';
-  }, 2500);
+    grid.classList.add('on');
+    sw.classList.add('go');
+  }, 80);
+
+  // T+400ms: corners expand, streams appear, bar appears
+  setTimeout(() => {
+    cns.forEach(c => c.classList.add('on'));
+    buildStream(stL, leftLines);
+    buildStream(stR, rightLines);
+    stL.classList.add('on');
+    stR.classList.add('on');
+    bar.classList.add('on');
+    startMsgs();
+    // Periodically flash data lines while reticle draws
+    const flashIv = setInterval(() => {
+      hotFlash(stL); hotFlash(stR);
+    }, 180);
+    setTimeout(() => clearInterval(flashIv), 1400);
+  }, 400);
+
+  // T+680ms: reticle appears, ring draws
+  setTimeout(() => {
+    ret.classList.add('on');
+    ring.classList.add('draw');
+  }, 680);
+
+  // T+1080ms: spokes + ticks + pip + orbit labels draw in
+  setTimeout(() => {
+    spokes.forEach((s, i) => setTimeout(() => s.classList.add('draw'), i * 55));
+    ticks.forEach((t, i)  => setTimeout(() => t.classList.add('on'),  i * 40 + 100));
+    pip.classList.add('on');
+    orbL.classList.add('on');
+    orbR.classList.add('on');
+    // Also draw the arc fill
+    sc.querySelectorAll('.is-arc').forEach(a => a.classList.add('draw'));
+  }, 1080);
+
+  // T+1380ms: wordmark emerges from inside reticle (starts at 0.18× scale)
+  setTimeout(() => {
+    wm.classList.add('expand', 'bloom');
+  }, 1380);
+
+  // T+1750ms: reticle contracts away as logo fills screen
+  setTimeout(() => {
+    ret.classList.remove('on');
+    ret.classList.add('out');
+    stL.style.opacity = '0.12';
+    stR.style.opacity = '0.12';
+  }, 1750);
+
+  // T+1950ms: divider expands
+  setTimeout(() => { div.style.width = 'min(340px, 68vw)'; }, 1950);
+
+  // T+2150ms: subtitle fades in
+  setTimeout(() => { sub.style.opacity = '1'; }, 2150);
+
+  // T+2250ms: status finalises
+  setTimeout(() => { stat.textContent = '▮ READY TO DEPLOY'; }, 2250);
+
+  // T+2550ms: phosphor flash then TV-off crush
+  setTimeout(() => {
+    const fl = document.createElement('div');
+    fl.style.cssText = 'position:absolute;inset:0;background:#fff;opacity:0.12;pointer-events:none;z-index:99;transition:opacity 0.12s ease;';
+    sc.appendChild(fl);
+    requestAnimationFrame(() => { fl.style.opacity = '0'; });
+    setTimeout(() => { sc.classList.add('gone'); }, 140);
+  }, 2550);
+
+  // T+2720ms: restore scroll
+  setTimeout(() => { document.body.style.overflow = ''; }, 2720);
 })();
 
 /* ── FEATURE 2: SCROLL PROGRESS BAR ── */
@@ -2201,6 +2597,165 @@ const ham  = document.getElementById('hamburger');
 const menu = document.getElementById('mobileMenu');
 ham.addEventListener('click', () => menu.classList.toggle('open'));
 function closeMobile() { menu.classList.remove('open'); }
+
+/* ── NEW F1: SECTION TITLE TEXT SCRAMBLE ── */
+(function() {
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+  function scrambleEl(el) {
+    const finalHTML  = el.innerHTML;
+    const plainText  = el.textContent;
+    let t0 = null;
+    (function frame(ts) {
+      if (!t0) t0 = ts;
+      const p   = Math.min((ts - t0) / 650, 1);
+      const rev = Math.floor(p * plainText.length);
+      el.textContent = plainText.split('').map((c, i) =>
+        (c === ' ' || i < rev) ? c : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+      ).join('');
+      if (p < 1) requestAnimationFrame(frame);
+      else el.innerHTML = finalHTML;
+    })(performance.now());
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.scrambled) {
+        e.target.dataset.scrambled = '1';
+        scrambleEl(e.target);
+      }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.section-title').forEach(t => obs.observe(t));
+})();
+
+
+/* ── NEW F3: HERO TITLE PERIODIC GLITCH ── */
+(function() {
+  const wm = document.querySelector('.hero-wordmark-inner');
+  if (!wm) return;
+  function scheduleGlitch() {
+    setTimeout(() => {
+      wm.classList.add('glitching');
+      setTimeout(() => { wm.classList.remove('glitching'); scheduleGlitch(); }, 420);
+    }, 3500 + Math.random() * 5500);
+  }
+  scheduleGlitch();
+})();
+
+/* ── NEW F4: CARD HOVER PARTICLE BURST ── */
+(function() {
+  function burst(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    for (let i = 0; i < 10; i++) {
+      const p = document.createElement('div');
+      const gold = Math.random() > 0.45;
+      Object.assign(p.style, {
+        position: 'fixed', width: '4px', height: '4px', borderRadius: '50%',
+        background: gold ? '#FFD060' : '#C084FC',
+        boxShadow: gold ? '0 0 6px #FFD060' : '0 0 6px #C084FC',
+        left: (rect.left + Math.random() * rect.width) + 'px',
+        top:  (rect.top  + Math.random() * rect.height * 0.4) + 'px',
+        pointerEvents: 'none', zIndex: 9000,
+        transition: `transform ${0.45 + Math.random() * 0.45}s ease, opacity 0.55s ease`,
+      });
+      document.body.appendChild(p);
+      requestAnimationFrame(() => {
+        p.style.transform = `translate(${(Math.random() - 0.5) * 90}px, ${-(25 + Math.random() * 65)}px) scale(0)`;
+        p.style.opacity = '0';
+      });
+      setTimeout(() => p.remove(), 700);
+    }
+  }
+  document.querySelectorAll('.player-card, .achievement-card, .sponsor-card').forEach(c => c.addEventListener('mouseenter', burst));
+})();
+
+/* ── NEW F5: CURSOR SPOTLIGHT ── */
+(function() {
+  const lens = document.getElementById('cursor-lens');
+  document.addEventListener('mousemove', e => {
+    lens.style.background = `radial-gradient(circle 320px at ${e.clientX}px ${e.clientY}px, rgba(192,132,252,0.055) 0%, transparent 100%)`;
+    lens.style.opacity = '1';
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { lens.style.opacity = '0'; });
+})();
+
+/* ── NEW F6: CROSSHAIR CURSOR ON HERO ── */
+(function() {
+  const ch   = document.getElementById('crosshair');
+  const hero = document.getElementById('home');
+  document.addEventListener('mousemove', e => {
+    ch.style.left = e.clientX + 'px';
+    ch.style.top  = e.clientY + 'px';
+    const r = hero.getBoundingClientRect();
+    const inHero = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    ch.style.opacity = inHero ? '1' : '0';
+  }, { passive: true });
+})();
+
+/* ── NEW F7: ANIMATED SECTION DIVIDERS ── */
+(function() {
+  document.querySelectorAll('.content > section, .content > .ticker-wrap').forEach(el => {
+    const d = document.createElement('div');
+    d.className = 'section-divider';
+    d.setAttribute('aria-hidden', 'true');
+    el.after(d);
+  });
+})();
+
+/* ── NEW F8: LIVE MISSOULA MT CLOCK ── */
+(function() {
+  const el = document.getElementById('live-clock');
+  function tick() {
+    const now = new Date();
+    const opts = { timeZone: 'America/Denver', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+    el.innerHTML = `<span style="letter-spacing:.08em;opacity:.5">MISSOULA MT</span><br>${now.toLocaleTimeString('en-US', opts)}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ── NEW F9: NAV SCRAMBLE ON HOVER ── */
+(function() {
+  const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const orig = a.textContent;
+    let raf = null;
+    a.addEventListener('mouseenter', () => {
+      let t0 = null;
+      cancelAnimationFrame(raf);
+      (function frame(ts) {
+        if (!t0) t0 = ts;
+        const p = Math.min((ts - t0) / 280, 1);
+        const rev = Math.floor(p * orig.length);
+        a.textContent = orig.split('').map((c, i) =>
+          (c === ' ' || i < rev) ? c : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]
+        ).join('');
+        if (p < 1) raf = requestAnimationFrame(frame);
+        else a.textContent = orig;
+      })(performance.now());
+    });
+    a.addEventListener('mouseleave', () => { cancelAnimationFrame(raf); a.textContent = orig; });
+  });
+})();
+
+/* ── NEW F10: SECTION ENTER FLASH ── */
+(function() {
+  const flash = document.createElement('div');
+  Object.assign(flash.style, {
+    position: 'fixed', inset: '0', zIndex: '9996', pointerEvents: 'none',
+    opacity: '0', background: 'radial-gradient(ellipse at center, rgba(192,132,252,0.07), transparent 70%)',
+    transition: 'opacity 0.25s ease',
+  });
+  document.body.appendChild(flash);
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio > 0.3) {
+        flash.style.opacity = '1';
+        setTimeout(() => { flash.style.opacity = '0'; }, 350);
+      }
+    });
+  }, { threshold: [0.3] });
+  document.querySelectorAll('section').forEach(s => obs.observe(s));
+})();
 </script>
 </body>
 </html>
