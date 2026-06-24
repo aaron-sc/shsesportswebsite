@@ -11,21 +11,25 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:        #03040A;
-      --bg2:       #060812;
-      --red:       #FF4655;
-      --red-dim:   rgba(255,70,85,0.15);
-      --cyan:      #00D4FF;
-      --cyan-dim:  rgba(0,212,255,0.1);
-      --purple:    #7B2FFF;
-      --gold:      #FFD060;
-      --pine:      #162A13;
-      --pine-mid:  #1E3A1A;
-      --sky:       #0A1828;
-      --text:      #E8E8F0;
-      --muted:     #5A5A7A;
-      --card:      rgba(255,255,255,0.028);
-      --border:    rgba(255,255,255,0.07);
+      --bg:          #07010E;
+      --bg2:         #0C0118;
+      --gold:        #FFD060;
+      --gold-dim:    rgba(255,208,96,0.14);
+      --gold-glow:   rgba(255,208,96,0.45);
+      --purple:      #C084FC;
+      --purple-dim:  rgba(192,132,252,0.12);
+      --deep:        #7C3AED;
+      --violet:      #A855F7;
+      --text:        #FFFFFF;
+      --muted:       #C8B8E8;
+      --card:        rgba(124,58,237,0.10);
+      --border:      rgba(192,132,252,0.18);
+    }
+
+    @property --ba {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: true;
     }
 
     html { scroll-behavior: smooth; }
@@ -37,6 +41,13 @@
       font-size: 16px;
       line-height: 1.6;
       overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--deep), var(--gold));
+      border-radius: 3px;
     }
 
     /* ─── CANVAS ─── */
@@ -52,7 +63,7 @@
       position: fixed; inset: 0;
       background: repeating-linear-gradient(
         0deg, transparent, transparent 3px,
-        rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px
+        rgba(100,40,200,0.018) 3px, rgba(100,40,200,0.018) 4px
       );
       pointer-events: none; z-index: 9999;
     }
@@ -64,9 +75,9 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
       padding: 1.1rem 2.5rem;
-      background: rgba(4,4,12,0.88);
+      background: rgba(7,1,14,0.85);
       backdrop-filter: blur(24px) saturate(180%);
-      border-bottom: 1px solid rgba(255,70,85,0.18);
+      border-bottom: 1px solid rgba(192,132,252,0.2);
     }
 
     .nav-logo {
@@ -75,7 +86,7 @@
       letter-spacing: 0.12em;
       color: var(--text); text-decoration: none;
     }
-    .nav-logo em { color: var(--red); font-style: normal; }
+    .nav-logo em { color: var(--gold); font-style: normal; }
 
     .nav-links { display: flex; gap: 2.2rem; list-style: none; }
     .nav-links a {
@@ -83,8 +94,18 @@
       font-size: 0.78rem; font-weight: 600;
       letter-spacing: 0.18em; text-transform: uppercase;
       transition: color 0.25s;
+      position: relative;
     }
-    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--deep), var(--gold));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { transform: scaleX(1); }
 
     /* hamburger */
     .hamburger {
@@ -99,7 +120,7 @@
     /* mobile menu */
     .mobile-menu {
       display: none; position: fixed; top: 60px; left: 0; right: 0; z-index: 199;
-      background: rgba(4,4,12,0.97);
+      background: rgba(7,1,14,0.97);
       border-bottom: 1px solid var(--border);
       padding: 1.5rem 2rem;
       flex-direction: column; gap: 1.2rem;
@@ -111,7 +132,7 @@
       letter-spacing: 0.15em; text-transform: uppercase;
       transition: color 0.25s;
     }
-    .mobile-menu a:hover { color: var(--red); }
+    .mobile-menu a:hover { color: var(--gold); }
 
     /* ─── HERO ─── */
     #home {
@@ -122,51 +143,46 @@
       position: relative; overflow: hidden;
     }
 
-    /* hero grid */
+    .hero-photo-bg {
+      position: absolute; inset: -24px;
+      background-image: url('images/sentinel-school.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      filter: blur(6px);
+      z-index: -1;
+    }
+
     #home::before {
       content: '';
       position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,70,85,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,70,85,0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+      background: linear-gradient(to bottom,
+        rgba(7,1,14,0.76) 0%,
+        rgba(30,4,65,0.48) 40%,
+        rgba(7,1,14,0.88) 78%,
+        rgba(7,1,14,1.00) 100%
+      );
+      z-index: 0;
     }
 
-    /* hero glow blobs */
-    .hero-blob {
-      position: absolute; border-radius: 50%; filter: blur(120px);
-      pointer-events: none; z-index: 0;
+    /* subtle radial vignette around hero text */
+    #home::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 55% at 50% 45%,
+        rgba(124,58,237,0.14) 0%,
+        rgba(255,208,96,0.04) 50%,
+        transparent 100%
+      );
+      z-index: 0; pointer-events: none;
     }
-    .hero-blob-1 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(255,70,85,0.12), transparent 70%);
-      top: 10%; left: -10%;
-    }
-    .hero-blob-2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(123,47,255,0.1), transparent 70%);
-      top: 20%; right: -5%;
-    }
-    .hero-blob-3 {
-      width: 600px; height: 300px;
-      background: radial-gradient(ellipse, rgba(22,60,20,0.18), transparent 70%);
-      bottom: 5%; left: 20%;
-    }
-
-    /* ─── MONTANA MOUNTAINS ─── */
-    .hero-mountains {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      width: 100%; z-index: 1; pointer-events: none;
-    }
-    .hero-mountains svg { display: block; width: 100%; height: auto; }
 
     .hero-tag {
       position: relative; z-index: 1;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem; color: var(--cyan);
+      font-size: 0.78rem; color: #FFFFFF;
       letter-spacing: 0.35em; text-transform: uppercase;
       margin-bottom: 1.6rem;
+      text-shadow: 0 0 24px rgba(192,132,252,1), 0 2px 20px rgba(0,0,0,1), 0 0 60px rgba(192,132,252,0.5);
       opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
     }
 
@@ -181,8 +197,23 @@
       font-size: clamp(3.5rem, 10vw, 8rem);
       font-weight: 900; line-height: 1;
       letter-spacing: 0.04em;
-      color: var(--text);
+      background: linear-gradient(120deg,
+        #FFD060 0%, #F0A500 20%, #FFD060 40%,
+        #C084FC 60%, #A855F7 80%, #FFD060 100%
+      );
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 300% 100%;
+      animation: shimmer-text 5s ease infinite;
       position: relative; display: inline-block;
+      filter: drop-shadow(0 0 40px rgba(255,208,96,0.5))
+              drop-shadow(0 4px 60px rgba(0,0,0,0.95));
+    }
+
+    @keyframes shimmer-text {
+      0%   { background-position: 0%   50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0%   50%; }
     }
 
     .hero-wordmark-inner::before,
@@ -193,22 +224,23 @@
       font-size: inherit; font-weight: inherit;
       letter-spacing: inherit; line-height: inherit;
       pointer-events: none;
+      -webkit-text-fill-color: initial; background: none;
     }
     .hero-wordmark-inner::before {
-      color: var(--cyan); opacity: 0;
-      animation: glitchA 6s infinite 1s;
+      color: var(--purple); opacity: 0;
+      animation: glitchA 7s infinite 1.5s;
     }
     .hero-wordmark-inner::after {
-      color: var(--red); opacity: 0;
-      animation: glitchB 6s infinite 1s;
+      color: var(--gold); opacity: 0;
+      animation: glitchB 7s infinite 1.5s;
     }
 
     .hero-esports {
       font-family: 'Orbitron', monospace;
       font-size: clamp(1rem, 3vw, 1.8rem);
       font-weight: 400; letter-spacing: 0.55em;
-      color: var(--red);
-      text-shadow: 0 0 30px rgba(255,70,85,0.6), 0 0 60px rgba(255,70,85,0.2);
+      color: var(--purple);
+      text-shadow: 0 0 30px rgba(192,132,252,0.8), 0 0 60px rgba(192,132,252,0.35);
       margin-bottom: 2.5rem; position: relative; z-index: 1;
       opacity: 0; animation: fadeUp 0.7s ease 0.6s forwards;
     }
@@ -221,30 +253,32 @@
     }
     .hero-divider-line {
       width: 80px; height: 1px;
-      background: linear-gradient(to right, transparent, var(--red));
+      background: linear-gradient(to right, transparent, var(--gold));
     }
     .hero-divider-line.r { transform: scaleX(-1); }
     .hero-divider-diamond {
       width: 8px; height: 8px;
-      background: var(--red); transform: rotate(45deg);
-      box-shadow: 0 0 12px var(--red);
+      background: var(--gold); transform: rotate(45deg);
+      box-shadow: 0 0 14px var(--gold), 0 0 30px rgba(255,208,96,0.4);
     }
 
     .hero-badge {
       display: inline-flex; align-items: center; gap: 0.6rem;
       padding: 0.55rem 1.6rem;
-      border: 1px solid rgba(255,70,85,0.35);
+      border: 1px solid rgba(255,208,96,0.4);
       border-radius: 2px;
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.75rem; letter-spacing: 0.2em;
-      color: var(--red); background: rgba(255,70,85,0.06);
+      color: var(--gold); background: rgba(255,208,96,0.06);
       position: relative; z-index: 1;
       opacity: 0; animation: fadeUp 0.7s ease 0.9s forwards;
+      box-shadow: 0 0 24px rgba(255,208,96,0.1), inset 0 0 20px rgba(255,208,96,0.03);
     }
     .hero-badge-dot {
       width: 7px; height: 7px;
-      background: var(--red); border-radius: 50%;
+      background: var(--gold); border-radius: 50%;
       animation: pulse 2s ease infinite;
+      box-shadow: 0 0 8px var(--gold);
     }
 
     .scroll-cue {
@@ -260,7 +294,7 @@
     .scroll-cue::after {
       content: '';
       width: 1px; height: 44px;
-      background: linear-gradient(to bottom, var(--muted), transparent);
+      background: linear-gradient(to bottom, var(--gold), transparent);
     }
 
     /* ─── SHARED SECTION ─── */
@@ -271,29 +305,36 @@
     .section-label {
       display: block;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--cyan);
+      font-size: 0.68rem; color: var(--purple);
       letter-spacing: 0.45em; text-transform: uppercase;
       margin-bottom: 0.75rem;
+      text-shadow: 0 0 16px rgba(192,132,252,0.7);
     }
     .section-title {
       font-family: 'Orbitron', monospace;
       font-size: clamp(1.8rem, 4vw, 2.8rem);
       font-weight: 700; line-height: 1.15;
     }
-    .section-title .accent { color: var(--red); }
+    .section-title .accent {
+      background: linear-gradient(135deg, var(--gold), #F0A500);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 12px rgba(255,208,96,0.4));
+    }
 
     .section-rule {
       display: flex; align-items: center; justify-content: center;
       gap: 0.8rem; margin-top: 1rem;
     }
     .section-rule::before, .section-rule::after {
-      content: ''; height: 1px; width: 50px;
-      background: linear-gradient(to right, transparent, var(--red));
+      content: ''; height: 1px; width: 60px;
+      background: linear-gradient(to right, transparent, var(--gold));
     }
     .section-rule::after { transform: scaleX(-1); }
     .rule-diamond {
       width: 6px; height: 6px;
-      background: var(--red); transform: rotate(45deg);
+      background: var(--gold); transform: rotate(45deg);
+      box-shadow: 0 0 10px var(--gold);
     }
 
     /* ─── TEAM ─── */
@@ -308,28 +349,38 @@
 
     .player-card {
       position: relative; padding: 2rem 1rem;
-      background: var(--card);
+      background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(7,1,14,0.7));
       border: 1px solid var(--border);
-      border-radius: 3px; text-align: center;
-      cursor: default; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      border-radius: 10px; text-align: center;
+      cursor: default;
+      transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
       overflow: hidden;
     }
     .player-card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      background: linear-gradient(90deg, transparent, var(--gold), var(--purple), var(--gold), transparent);
+      background-size: 200% 100%;
       transform: scaleX(0); transform-origin: left;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s ease;
     }
-    .player-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 0%, rgba(255,70,85,0.07), transparent 70%);
-      opacity: 0; transition: opacity 0.3s;
+    .player-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255,208,96,0.4);
+      box-shadow:
+        0 24px 64px rgba(255,208,96,0.12),
+        0 0 40px rgba(124,58,237,0.18),
+        inset 0 0 30px rgba(124,58,237,0.06);
     }
-    .player-card:hover { transform: translateY(-6px); border-color: rgba(255,70,85,0.3); box-shadow: 0 16px 50px rgba(255,70,85,0.12); }
-    .player-card:hover::before { transform: scaleX(1); }
-    .player-card:hover::after { opacity: 1; }
+    .player-card:hover::before {
+      transform: scaleX(1);
+      animation: shimmer-bar 1.8s ease infinite;
+    }
+
+    @keyframes shimmer-bar {
+      0%   { background-position: -100% 0; }
+      100% { background-position: 200%  0; }
+    }
 
     .player-number-badge {
       position: absolute; top: 10px; right: 10px;
@@ -344,29 +395,32 @@
       font-family: 'Orbitron', monospace;
       font-size: 1.4rem; font-weight: 700;
       margin: 0 auto 1rem;
-      position: relative; z-index: 1;
+      position: relative;
     }
     .player-avatar-ring {
-      position: absolute; inset: -3px; border-radius: 50%;
-      border: 1px solid rgba(255,70,85,0.4);
+      position: absolute; inset: -4px; border-radius: 50%;
+      border: 1px solid rgba(255,208,96,0.5);
+      animation: pulse-ring 2.5s ease infinite;
+    }
+    @keyframes pulse-ring {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,208,96,0.35); }
+      50%      { box-shadow: 0 0 0 7px rgba(255,208,96,0); }
     }
 
-    .av-1 { background: linear-gradient(135deg, #FF4655, #7B2FFF); }
-    .av-2 { background: linear-gradient(135deg, #7B2FFF, #00D4FF); }
-    .av-3 { background: linear-gradient(135deg, #00D4FF, #1a8cff); }
-    .av-4 { background: linear-gradient(135deg, #FF9900, #FF4655); }
-    .av-5 { background: linear-gradient(135deg, #FF4655, #00D4FF); }
+    .av-1 { background: linear-gradient(135deg, #7C3AED, #C084FC); }
+    .av-2 { background: linear-gradient(135deg, #A855F7, #FFD060); }
+    .av-3 { background: linear-gradient(135deg, #FFD060, #E0A500); }
+    .av-4 { background: linear-gradient(135deg, #C084FC, #7C3AED); }
+    .av-5 { background: linear-gradient(135deg, #FFD060, #A855F7); }
 
     .player-name {
       font-family: 'Orbitron', monospace;
       font-size: 0.82rem; font-weight: 700;
       letter-spacing: 0.04em; margin-bottom: 0.3rem;
-      position: relative; z-index: 1;
     }
     .player-game {
       font-size: 0.7rem; color: var(--muted);
       letter-spacing: 0.15em; text-transform: uppercase;
-      position: relative; z-index: 1;
     }
 
     /* ─── SPONSORS ─── */
@@ -380,25 +434,29 @@
 
     .sponsor-card {
       position: relative; padding: 2.5rem 2rem;
-      background: var(--card);
+      background: linear-gradient(145deg, rgba(124,58,237,0.07), rgba(7,1,14,0.6));
       border: 1px solid var(--border);
-      border-radius: 3px; text-align: center;
+      border-radius: 10px; text-align: center;
       transition: all 0.3s; overflow: hidden;
     }
     .sponsor-card::before {
       content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.07), transparent 70%);
+      position: absolute; inset: 0; border-radius: 10px;
+      background: radial-gradient(circle at 50% 0%, rgba(255,208,96,0.08), transparent 70%);
       opacity: 0; transition: opacity 0.3s;
     }
-    .sponsor-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.3); box-shadow: 0 0 40px rgba(0,212,255,0.1); }
+    .sponsor-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,208,96,0.4);
+      box-shadow: 0 0 50px rgba(255,208,96,0.1);
+    }
     .sponsor-card:hover::before { opacity: 1; }
 
     .sponsor-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
     .sponsor-name {
       font-family: 'Orbitron', monospace;
       font-size: 0.95rem; font-weight: 600;
-      color: var(--cyan); letter-spacing: 0.04em;
+      color: var(--gold); letter-spacing: 0.04em;
     }
     .sponsor-type {
       font-size: 0.72rem; color: var(--muted);
@@ -425,17 +483,18 @@
       padding: 0.55rem 1.1rem;
       background: transparent;
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: 3px;
       color: var(--muted);
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.72rem; letter-spacing: 0.14em;
       cursor: pointer; transition: all 0.25s;
       text-transform: uppercase;
     }
-    .tab:hover { color: var(--red); border-color: rgba(255,70,85,0.4); }
+    .tab:hover { color: var(--gold); border-color: rgba(255,208,96,0.4); }
     .tab.active {
-      color: var(--red); border-color: var(--red);
-      background: rgba(255,70,85,0.08);
+      color: var(--gold); border-color: var(--gold);
+      background: rgba(255,208,96,0.08);
+      box-shadow: 0 0 20px rgba(255,208,96,0.12);
     }
 
     .panel { display: none; max-width: 780px; margin: 0 auto; animation: fadeUp 0.35s ease; }
@@ -452,9 +511,9 @@
     }
     .panel-raised {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.78rem; color: var(--cyan);
+      font-size: 0.78rem; color: var(--purple);
       padding: 0.2rem 0.65rem;
-      border: 1px solid rgba(0,212,255,0.3);
+      border: 1px solid rgba(192,132,252,0.3);
       border-radius: 2px;
     }
 
@@ -465,14 +524,14 @@
       grid-template-columns: 2.5rem 1fr auto;
       align-items: center; gap: 0.8rem;
       padding: 0.7rem 1rem;
-      background: var(--card);
+      background: rgba(124,58,237,0.04);
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: 5px;
       transition: border-color 0.2s, background 0.2s;
     }
     .donor-row:hover {
-      border-color: rgba(255,70,85,0.18);
-      background: rgba(255,70,85,0.025);
+      border-color: rgba(255,208,96,0.25);
+      background: rgba(255,208,96,0.03);
     }
 
     .donor-rank {
@@ -480,7 +539,7 @@
       font-size: 0.68rem; color: var(--muted);
       text-align: right;
     }
-    .donor-rank.gold { color: #FFD060; }
+    .donor-rank.gold   { color: #FFD060; text-shadow: 0 0 10px rgba(255,208,96,0.6); }
     .donor-rank.silver { color: #B0B8CC; }
     .donor-rank.bronze { color: #CD7F32; }
 
@@ -488,14 +547,14 @@
 
     .donor-pip {
       width: 4px; height: 4px;
-      background: var(--red); border-radius: 50%; opacity: 0.4;
+      background: var(--gold); border-radius: 50%; opacity: 0.45;
     }
 
     /* ─── FOOTER ─── */
     footer {
       padding: 3.5rem 2rem;
       background: var(--bg2);
-      border-top: 1px solid rgba(255,70,85,0.1);
+      border-top: 1px solid rgba(255,208,96,0.1);
       text-align: center;
     }
     .footer-logo {
@@ -503,13 +562,14 @@
       font-size: 1.4rem; font-weight: 900;
       margin-bottom: 0.4rem;
     }
-    .footer-logo em { color: var(--red); font-style: normal; }
+    .footer-logo em { color: var(--gold); font-style: normal; }
     .footer-school {
       color: var(--muted); font-size: 0.78rem;
       letter-spacing: 0.22em; text-transform: uppercase;
     }
     .footer-hr {
-      height: 1px; background: var(--border);
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), var(--purple), transparent);
       max-width: 320px; margin: 2rem auto;
     }
     .footer-copy {
@@ -538,18 +598,17 @@
     }
     @keyframes glitchA {
       0%,92%,100% { opacity: 0; transform: translate(0); clip-path: none; }
-      93%  { opacity: 0.6; transform: translate(-4px,  1px); clip-path: inset(10% 0 70% 0); }
-      94%  { opacity: 0.6; transform: translate( 3px, -1px); clip-path: inset(50% 0 30% 0); }
-      95%  { opacity: 0.6; transform: translate(-2px,  2px); clip-path: inset(80% 0  5% 0); }
+      93%  { opacity: 0.5; transform: translate(-4px,  1px); clip-path: inset(10% 0 70% 0); }
+      94%  { opacity: 0.5; transform: translate( 3px, -1px); clip-path: inset(50% 0 30% 0); }
+      95%  { opacity: 0.5; transform: translate(-2px,  2px); clip-path: inset(80% 0  5% 0); }
       96%  { opacity: 0; }
     }
     @keyframes glitchB {
       0%,94%,100% { opacity: 0; transform: translate(0); clip-path: none; }
-      95%  { opacity: 0.5; transform: translate( 4px, -2px); clip-path: inset(20% 0 60% 0); }
-      96%  { opacity: 0.5; transform: translate(-3px,  1px); clip-path: inset(60% 0 20% 0); }
+      95%  { opacity: 0.45; transform: translate( 4px,-2px); clip-path: inset(20% 0 60% 0); }
+      96%  { opacity: 0.45; transform: translate(-3px, 1px); clip-path: inset(60% 0 20% 0); }
       97%  { opacity: 0; }
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ─── ABOUT ─── */
     #about { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%); }
@@ -568,9 +627,10 @@
 
     .games-col-label {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--cyan);
+      font-size: 0.68rem; color: var(--purple);
       letter-spacing: 0.38em; text-transform: uppercase;
       margin-bottom: 1rem; display: block;
+      text-shadow: 0 0 14px rgba(192,132,252,0.6);
     }
 
     .games-grid { display: grid; gap: 0.55rem; }
@@ -578,11 +638,17 @@
     .game-tile {
       display: flex; align-items: center; gap: 0.9rem;
       padding: 0.65rem 1rem;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 3px; transition: transform 0.2s, border-color 0.2s;
+      background: rgba(124,58,237,0.05); border: 1px solid var(--border);
+      border-radius: 6px; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
-    .game-tile.active { border-color: rgba(255,70,85,0.35); background: rgba(255,70,85,0.04); }
-    .game-tile:hover { transform: translateX(5px); }
+    .game-tile.active {
+      border-color: rgba(255,208,96,0.35);
+      background: rgba(255,208,96,0.04);
+    }
+    .game-tile:hover {
+      transform: translateX(5px);
+      box-shadow: -3px 0 20px rgba(255,208,96,0.08);
+    }
 
     .game-status {
       font-family: 'Share Tech Mono', monospace;
@@ -590,7 +656,7 @@
       padding: 0.15rem 0.5rem; border-radius: 2px;
       text-transform: uppercase; white-space: nowrap;
     }
-    .game-tile.active .game-status { color: var(--red); border: 1px solid rgba(255,70,85,0.45); }
+    .game-tile.active .game-status { color: var(--gold);   border: 1px solid rgba(255,208,96,0.45); }
     .game-tile.soon  .game-status { color: var(--muted); border: 1px solid var(--border); }
 
     .game-name { font-size: 0.92rem; font-weight: 600; letter-spacing: 0.03em; }
@@ -614,15 +680,19 @@
 
     .achievement {
       padding: 2rem 1.5rem; text-align: center;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 3px; position: relative; overflow: hidden;
+      background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(7,1,14,0.75));
+      border: 1px solid var(--border);
+      border-radius: 10px; position: relative; overflow: hidden;
       transition: transform 0.3s, box-shadow 0.3s;
     }
     .achievement::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
-    .achievement:hover { transform: translateY(-5px); box-shadow: 0 14px 42px rgba(255,70,85,0.1); }
+    .achievement:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 42px rgba(255,208,96,0.14);
+    }
 
     .achievement-season {
       font-family: 'Share Tech Mono', monospace;
@@ -632,8 +702,11 @@
     .achievement-num {
       font-family: 'Orbitron', monospace;
       font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 900; color: var(--red);
-      text-shadow: 0 0 30px rgba(255,70,85,0.4);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--gold), #F0A500, var(--gold));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 20px rgba(255,208,96,0.5));
       line-height: 1; margin-bottom: 0.5rem;
     }
     .achievement-label {
@@ -646,28 +719,32 @@
     /* nationals callout */
     .nationals-banner {
       margin-top: 1.5rem; padding: 2rem 2.5rem;
-      background: rgba(255,70,85,0.04);
-      border: 1px solid rgba(255,70,85,0.35);
-      border-radius: 3px; text-align: center;
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(255,208,96,0.05), rgba(124,58,237,0.08));
+      border: 1px solid rgba(255,208,96,0.38);
+      border-radius: 10px; text-align: center;
       position: relative; overflow: hidden;
     }
     .nationals-banner::before {
       content: '';
       position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,70,85,0.06), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,208,96,0.07), transparent);
       animation: shimmer 3.5s ease infinite;
     }
     .nationals-badge {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--cyan);
+      font-size: 0.68rem; color: var(--purple);
       letter-spacing: 0.45em; text-transform: uppercase;
       margin-bottom: 0.5rem;
+      text-shadow: 0 0 15px rgba(192,132,252,0.7);
     }
     .nationals-title {
       font-family: 'Orbitron', monospace;
       font-size: clamp(1.4rem, 3.5vw, 2.1rem);
-      font-weight: 900; color: var(--text);
-      text-shadow: 0 0 30px rgba(255,70,85,0.35);
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--gold), var(--purple));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 20px rgba(255,208,96,0.4));
       margin-bottom: 0.4rem; letter-spacing: 0.06em;
     }
     .nationals-sub {
@@ -706,19 +783,24 @@
 
     .coach-card {
       position: relative; padding: 2rem 1rem;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 3px; text-align: center;
+      background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(7,1,14,0.7));
+      border: 1px solid var(--border);
+      border-radius: 10px; text-align: center;
       transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
       overflow: hidden;
     }
     .coach-card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      background: linear-gradient(90deg, transparent, var(--purple), transparent);
       transform: scaleX(0); transform-origin: left;
       transition: transform 0.4s ease;
     }
-    .coach-card:hover { transform: translateY(-5px); border-color: rgba(0,212,255,0.3); box-shadow: 0 14px 42px rgba(0,212,255,0.1); }
+    .coach-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(192,132,252,0.38);
+      box-shadow: 0 14px 42px rgba(192,132,252,0.14);
+    }
     .coach-card:hover::before { transform: scaleX(1); }
 
     .coach-avatar {
@@ -728,11 +810,11 @@
       font-size: 1.4rem; font-weight: 700;
       margin: 0 auto 1rem; position: relative;
     }
-    .ca-1 { background: linear-gradient(135deg, #00D4FF, #1B4FFF); }
-    .ca-2 { background: linear-gradient(135deg, #1B4FFF, #7B2FFF); }
+    .ca-1 { background: linear-gradient(135deg, #7C3AED, #C084FC); }
+    .ca-2 { background: linear-gradient(135deg, #C084FC, #FFD060); }
     .coach-avatar-ring {
       position: absolute; inset: -3px; border-radius: 50%;
-      border: 1px solid rgba(0,212,255,0.4);
+      border: 1px solid rgba(192,132,252,0.5);
     }
     .coach-name {
       font-family: 'Orbitron', monospace;
@@ -740,7 +822,7 @@
       letter-spacing: 0.04em; margin-bottom: 0.3rem;
     }
     .coach-role {
-      font-size: 0.72rem; color: var(--cyan);
+      font-size: 0.72rem; color: var(--purple);
       letter-spacing: 0.12em; text-transform: uppercase;
       margin-bottom: 0.2rem;
     }
@@ -760,7 +842,7 @@
     .mv-col-label {
       display: block;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--cyan);
+      font-size: 0.68rem; color: var(--purple);
       letter-spacing: 0.38em; text-transform: uppercase;
       margin-bottom: 1.2rem;
     }
@@ -769,14 +851,99 @@
 
     .mv-card {
       padding: 1.1rem 1.2rem 1.1rem 1.4rem;
-      background: var(--card);
+      background: rgba(124,58,237,0.05);
       border: 1px solid var(--border);
-      border-left: 2px solid var(--red);
-      border-radius: 3px;
+      border-left: 2px solid var(--deep);
+      border-radius: 5px;
       font-size: 0.95rem; color: var(--muted); line-height: 1.75;
       transition: background 0.25s, border-left-color 0.25s;
     }
-    .mv-card:hover { background: rgba(255,70,85,0.03); border-left-color: var(--cyan); }
+    .mv-card:hover { background: rgba(255,208,96,0.03); border-left-color: var(--gold); }
+
+    /* ─── DISCORD ─── */
+    #discord { background: var(--bg2); padding: 4rem 2rem; }
+
+    .discord-banner {
+      display: flex; align-items: center; gap: 2.5rem;
+      max-width: 860px; margin: 0 auto;
+      padding: 2.2rem 2.8rem;
+      background: linear-gradient(135deg, rgba(88,101,242,0.13), rgba(124,58,237,0.08));
+      border: 1px solid rgba(88,101,242,0.38);
+      border-radius: 14px;
+      position: relative; overflow: hidden;
+    }
+    .discord-banner::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(88,101,242,0.07), transparent);
+      animation: shimmer 4s ease infinite;
+    }
+    .discord-banner::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #5865F2, var(--purple), transparent);
+    }
+
+    .discord-icon { flex-shrink: 0; }
+    .discord-icon svg {
+      width: 52px; height: 52px; fill: #5865F2;
+      filter: drop-shadow(0 0 14px rgba(88,101,242,0.7));
+    }
+
+    .discord-text { flex: 1; }
+    .discord-heading {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.4rem; letter-spacing: 0.04em;
+    }
+    .discord-sub {
+      color: var(--muted); font-size: 0.97rem; line-height: 1.55;
+    }
+
+    .discord-btn {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      padding: 0.8rem 2rem;
+      background: linear-gradient(135deg, #5865F2, #7B68EE);
+      border-radius: 8px; border: none;
+      color: #fff; text-decoration: none;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+      white-space: nowrap; flex-shrink: 0;
+      box-shadow: 0 4px 24px rgba(88,101,242,0.45);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .discord-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 36px rgba(88,101,242,0.65);
+    }
+    .discord-btn svg { width: 18px; height: 18px; fill: #fff; }
+
+    @media (max-width: 640px) {
+      .discord-banner { flex-direction: column; text-align: center; gap: 1.5rem; padding: 2rem 1.5rem; }
+    }
+
+    /* ─── SCROLL TO TOP ─── */
+    .scroll-top {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--deep), var(--violet));
+      border: 1px solid rgba(255,208,96,0.35);
+      color: var(--gold); cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(124,58,237,0.5);
+      opacity: 0; transform: translateY(14px);
+      transition: opacity 0.35s, transform 0.35s, box-shadow 0.25s;
+      pointer-events: none;
+    }
+    .scroll-top.visible {
+      opacity: 1; transform: translateY(0);
+      pointer-events: auto;
+    }
+    .scroll-top:hover {
+      box-shadow: 0 8px 34px rgba(255,208,96,0.35);
+      transform: translateY(-3px);
+    }
+    .scroll-top svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ─── CONTACT ─── */
     #contact { background: var(--bg); }
@@ -790,29 +957,240 @@
     }
 
     .form-shell {
-      border: 1px solid var(--border); border-radius: 4px;
+      border: 1px solid var(--border); border-radius: 8px;
       overflow: hidden; background: #ffffff;
+      box-shadow: 0 0 40px rgba(124,58,237,0.08);
     }
     .form-shell iframe { display: block; width: 100%; height: 680px; border: none; }
+
+    /* ─── SCROLL SPY ACTIVE NAV LINK ─── */
+    .nav-links a.spy-active { color: var(--gold); }
+    .nav-links a.spy-active::after { transform: scaleX(1); }
+
+    /* ─── SECTION RULE LINE EXPAND ON REVEAL ─── */
+    .section-rule::before,
+    .section-rule::after { width: 0; transition: width 0.9s cubic-bezier(0.4,0,0.2,1) 0.25s; }
+    .reveal.visible .section-rule::before,
+    .reveal.visible .section-rule::after { width: 60px; }
+
+    /* ─── 3D CARD TILT SETUP ─── */
+    .team-grid { perspective: 900px; }
+    .player-card {
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* ─── HERO SPARKLES ─── */
+    .hero-spark {
+      position: absolute; pointer-events: none; border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 6px var(--gold), 0 0 14px rgba(255,208,96,0.5);
+      z-index: 1;
+      animation: spark-float linear infinite;
+    }
+    @keyframes spark-float {
+      0%   { opacity: 0;   transform: translateY(0)     scale(0); }
+      12%  { opacity: 1;   transform: translateY(-30px) scale(1); }
+      85%  { opacity: 0.6; }
+      100% { opacity: 0;   transform: translateY(-160px) scale(0.2); }
+    }
+
+    /* ─── SECTION GLASS PANELS (contrast boost) ─── */
+    #about, #story, #mission, #sponsors, #donors, #contact, #team {
+      position: relative;
+    }
+    #about::before, #story::before, #mission::before,
+    #sponsors::before, #donors::before, #contact::before, #team::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to bottom,
+        rgba(7,1,14,0.15) 0%, rgba(7,1,14,0.0) 20%,
+        rgba(7,1,14,0.0) 80%, rgba(7,1,14,0.15) 100%
+      );
+    }
+
+    /* ─── STORY / ABOUT SECTION TEXT CONTRAST ─── */
+    .story-text, .about-text p, .mv-card {
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+    .about-text p, .story-text p { font-size: 1.08rem; }
+
+    /* ─── CARD GLASS BACKDROP ─── */
+    .player-card, .sponsor-card, .achievement, .coach-card {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ─── 1. INTRO SCREEN ─── */
+    #intro-screen {
+      position: fixed; inset: 0; z-index: 10000;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.6rem;
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+    #intro-screen.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .intro-wordmark {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 900; letter-spacing: 0.1em;
+      background: linear-gradient(120deg, #FFD060 0%, #F0A500 30%, #FFD060 60%, #C084FC 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% 100%;
+      filter: drop-shadow(0 0 40px rgba(255,208,96,0.55));
+      clip-path: inset(0 100% 0 0);
+      animation: intro-wipe 1s cubic-bezier(0.77,0,0.175,1) 0.2s forwards;
+    }
+    @keyframes intro-wipe { to { clip-path: inset(0 0% 0 0); } }
+
+    .intro-line {
+      width: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      animation: intro-line-expand 0.7s ease 1.1s forwards;
+      box-shadow: 0 0 8px var(--gold);
+    }
+    @keyframes intro-line-expand { to { width: 320px; } }
+
+    .intro-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(0.65rem, 1.5vw, 0.9rem);
+      letter-spacing: 0.55em; color: var(--purple);
+      text-shadow: 0 0 20px rgba(192,132,252,0.9);
+      opacity: 0; animation: fadeUp 0.5s ease 1.3s forwards;
+    }
+
+    /* ─── 2. SCROLL PROGRESS BAR ─── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; z-index: 201;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--deep), var(--gold), var(--purple));
+      box-shadow: 0 0 10px rgba(255,208,96,0.55);
+      transition: width 0.08s linear;
+      pointer-events: none;
+    }
+
+    /* ─── 3. STATS TICKER ─── */
+    .ticker-wrap {
+      overflow: hidden;
+      background: linear-gradient(90deg, rgba(124,58,237,0.14), rgba(255,208,96,0.05), rgba(124,58,237,0.14));
+      border-top: 1px solid rgba(255,208,96,0.18);
+      border-bottom: 1px solid rgba(255,208,96,0.18);
+      padding: 0.65rem 0;
+      position: relative; z-index: 2;
+    }
+    .ticker-track {
+      display: flex; align-items: center; gap: 2.5rem;
+      white-space: nowrap; width: max-content;
+      animation: ticker-scroll 28s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    .ticker-track span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.22em;
+      color: var(--text); text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(255,208,96,0.25);
+    }
+    .ticker-star { color: var(--gold) !important; text-shadow: 0 0 10px rgba(255,208,96,0.6) !important; }
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── 4. MOUSE TRAIL ─── */
+    @keyframes trail-fade {
+      0%   { opacity: 0.85; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity: 0;    transform: translate(-50%,-80%) scale(0.1); }
+    }
+
+    /* ─── 5. CLICK RIPPLE ─── */
+    .click-ripple {
+      position: fixed; pointer-events: none; z-index: 9996;
+      width: 0; height: 0; border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      transform: translate(-50%,-50%);
+      animation: ripple-expand 0.65s ease-out forwards;
+    }
+    @keyframes ripple-expand {
+      0%   { width: 0;     height: 0;     opacity: 0.9; border-color: var(--gold); }
+      100% { width: 120px; height: 120px; opacity: 0;   border-color: var(--purple); }
+    }
+
+    /* ─── 6. SHOOTING STARS ─── */
+    .shoot-star {
+      position: absolute; pointer-events: none; z-index: 1;
+      height: 1px; width: 0;
+      background: linear-gradient(90deg, rgba(255,208,96,0), #FFD060, rgba(255,208,96,0));
+      box-shadow: 0 0 4px rgba(255,208,96,0.5);
+      animation: shoot-anim linear forwards;
+    }
+    @keyframes shoot-anim {
+      0%   { width: 0;     opacity: 0; }
+      15%  { opacity: 1; }
+      100% { width: 180px; opacity: 0; }
+    }
+
+    /* ─── 7. TOAST NOTIFICATION ─── */
+    .toast {
+      position: fixed; bottom: 5.5rem; left: 50%; z-index: 10002;
+      transform: translateX(-50%) translateY(16px);
+      background: linear-gradient(135deg, rgba(88,101,242,0.96), rgba(124,58,237,0.96));
+      border: 1px solid rgba(255,208,96,0.3); border-radius: 8px;
+      padding: 0.75rem 1.6rem;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; letter-spacing: 0.1em;
+      color: #fff; box-shadow: 0 8px 32px rgba(124,58,237,0.45);
+      opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── 8. KONAMI OVERLAY ─── */
+    .konami-overlay {
+      position: fixed; inset: 0; z-index: 10001; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.5rem;
+      background: rgba(7,1,14,0.92);
+      animation: konami-in 0.4s ease, konami-out 0.6s ease 3.2s forwards;
+    }
+    @keyframes konami-in  { from { opacity:0; } to { opacity:1; } }
+    @keyframes konami-out { from { opacity:1; } to { opacity:0; } }
+    .konami-text {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.4rem, 5vw, 3.2rem); font-weight: 900; letter-spacing: 0.08em;
+      background: linear-gradient(135deg, #FFD060, #C084FC, #FFD060);
+      background-size: 200% 100%; -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 30px rgba(255,208,96,0.6));
+      animation: shimmer-text 1.5s ease infinite, pulse-scale 0.45s ease infinite alternate;
+      text-align: center;
+    }
+    @keyframes pulse-scale { from { transform:scale(1); } to { transform:scale(1.05); } }
+    .konami-sub {
+      font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
+      color: var(--purple); letter-spacing: 0.3em; text-align: center;
+      text-shadow: 0 0 20px rgba(192,132,252,0.8);
+    }
+    .konfetti {
+      position: absolute; top: -12px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+    /* ─── 9. ACHIEVEMENT CARD TILT ─── */
+    .achievements { perspective: 900px; }
+    .achievement { will-change: transform; }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 900px) {
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .mv-grid    { grid-template-columns: 1fr; gap: 2rem; }
-    }
-    @media (max-width: 640px) {
-      .achievements { grid-template-columns: 1fr; }
-    }
-
-    /* ─── RESPONSIVE (existing breakpoints below) ─── */
-    @media (max-width: 900px) {
-      .team-grid { grid-template-columns: repeat(3, 1fr); }
+      .team-grid  { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 640px) {
       nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .team-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .nav-links  { display: none; }
+      .hamburger  { display: flex; }
+      .achievements { grid-template-columns: 1fr; }
+      .team-grid  { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
       .sponsors-grid { grid-template-columns: 1fr; }
       section { padding: 5rem 1.5rem; }
       .tab { font-size: 0.65rem; padding: 0.45rem 0.85rem; }
@@ -820,18 +1198,25 @@
   </style>
 </head>
 <body>
+<div id="intro-screen">
+  <div class="intro-wordmark">SENTINEL</div>
+  <div class="intro-line"></div>
+  <div class="intro-sub">ESPORTS &nbsp;·&nbsp; MISSOULA, MT</div>
+</div>
+<div id="progress-bar"></div>
 <canvas id="bgCanvas"></canvas>
 
 <div class="content">
 
   <!-- ── NAV ── -->
   <nav>
-    <a href="#home" class="nav-logo">SENTINEL</a>
+    <a href="#home" class="nav-logo">SENTINEL<em>.</em></a>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#team">Roster</a></li>
       <li><a href="#sponsors">Sponsors</a></li>
       <li><a href="#donors">Donors</a></li>
+      <li><a href="#discord">Discord</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -844,14 +1229,13 @@
     <a href="#team"     onclick="closeMobile()">Roster</a>
     <a href="#sponsors" onclick="closeMobile()">Sponsors</a>
     <a href="#donors"   onclick="closeMobile()">Donors</a>
+    <a href="#discord"  onclick="closeMobile()">Discord</a>
     <a href="#contact"  onclick="closeMobile()">Contact</a>
   </div>
 
   <!-- ── HERO ── -->
   <section id="home">
-    <div class="hero-blob hero-blob-1"></div>
-    <div class="hero-blob hero-blob-2"></div>
-    <div class="hero-blob hero-blob-3"></div>
+    <div class="hero-photo-bg"></div>
 
     <div class="hero-tag">// Missoula, Montana &nbsp;·&nbsp; Sentinel High School &nbsp;·&nbsp; Esports //</div>
 
@@ -867,106 +1251,24 @@
       <div class="hero-divider-line r"></div>
     </div>
 
-    <div class="hero-badge">
-      <div class="hero-badge-dot"></div>
-      VALORANT &nbsp;·&nbsp; ACTIVE ROSTER
-    </div>
-
-    <!-- Montana mountain silhouette -->
-    <div class="hero-mountains" aria-hidden="true">
-      <svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="gMtFar" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0C1E32" stop-opacity="0.65"/>
-            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
-          </linearGradient>
-          <linearGradient id="gMtMid" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#091A14" stop-opacity="0.8"/>
-            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
-          </linearGradient>
-          <linearGradient id="gMtNear" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#0C2010" stop-opacity="0.95"/>
-            <stop offset="100%" stop-color="#03040A" stop-opacity="1"/>
-          </linearGradient>
-        </defs>
-
-        <!-- Far range (distant Rocky peaks, blue-grey) -->
-        <path d="M0,260 L0,148 Q80,118 160,110 Q240,102 320,90 Q400,78 460,82 Q520,86 580,70 Q640,54 700,60 Q760,66 820,52 Q880,38 940,50 Q1000,62 1060,72 Q1130,83 1220,95 Q1340,108 1440,115 L1440,260 Z" fill="url(#gMtFar)"/>
-
-        <!-- Mid range (Mission Mts / Mount Jumbo silhouette) -->
-        <path d="M0,260 L0,200 Q60,186 120,180 Q180,174 240,170 Q300,166 360,162 Q420,158 470,165 Q520,172 570,165 Q620,158 680,150 Q740,142 800,148 Q860,154 920,148 Q980,142 1040,152 Q1100,162 1160,170 Q1240,178 1340,190 L1440,198 L1440,260 Z" fill="url(#gMtMid)"/>
-
-        <!-- Near treeline (Ponderosa pine / Douglas fir silhouette) -->
-        <!-- Left hillside trees -->
-        <g fill="#0E1F0F">
-          <!-- tree cluster left-far -->
-          <polygon points="18,232 3,255 33,255"/>
-          <polygon points="18,242 0,255 36,255"/>
-          <rect x="14" y="255" width="8" height="5" fill="#130C04"/>
-
-          <polygon points="55,222 38,250 72,250"/>
-          <polygon points="55,233 35,250 75,250"/>
-          <polygon points="55,244 32,250 78,250"/>
-          <rect x="51" y="250" width="8" height="6" fill="#130C04"/>
-
-          <polygon points="95,218 77,248 113,248"/>
-          <polygon points="95,229 73,248 117,248"/>
-          <polygon points="95,240 70,248 120,248"/>
-          <rect x="91" y="248" width="8" height="7" fill="#130C04"/>
-
-          <polygon points="135,225 119,252 151,252"/>
-          <polygon points="135,236 116,252 154,252"/>
-          <polygon points="135,246 113,252 157,252"/>
-          <rect x="131" y="252" width="8" height="5" fill="#130C04"/>
-
-          <polygon points="175,220 158,248 192,248"/>
-          <polygon points="175,231 155,248 195,248"/>
-          <polygon points="175,242 152,248 198,248"/>
-          <rect x="171" y="248" width="8" height="7" fill="#130C04"/>
-
-          <polygon points="215,228 200,254 230,254"/>
-          <polygon points="215,238 197,254 233,254"/>
-          <rect x="211" y="254" width="8" height="6" fill="#130C04"/>
-        </g>
-
-        <!-- Right hillside trees -->
-        <g fill="#0D1E0E">
-          <polygon points="1230,230 1215,255 1245,255"/>
-          <polygon points="1230,240 1212,255 1248,255"/>
-          <rect x="1226" y="255" width="8" height="5" fill="#130C04"/>
-
-          <polygon points="1272,220 1255,250 1289,250"/>
-          <polygon points="1272,231 1252,250 1292,250"/>
-          <polygon points="1272,242 1249,250 1295,250"/>
-          <rect x="1268" y="250" width="8" height="7" fill="#130C04"/>
-
-          <polygon points="1315,224 1298,252 1332,252"/>
-          <polygon points="1315,235 1295,252 1335,252"/>
-          <polygon points="1315,246 1292,252 1338,252"/>
-          <rect x="1311" y="252" width="8" height="6" fill="#130C04"/>
-
-          <polygon points="1358,218 1340,248 1376,248"/>
-          <polygon points="1358,229 1337,248 1379,248"/>
-          <polygon points="1358,240 1334,248 1382,248"/>
-          <rect x="1354" y="248" width="8" height="7" fill="#130C04"/>
-
-          <polygon points="1400,225 1384,252 1416,252"/>
-          <polygon points="1400,236 1381,252 1419,252"/>
-          <polygon points="1400,247 1378,252 1422,252"/>
-          <rect x="1396" y="252" width="8" height="6" fill="#130C04"/>
-
-          <polygon points="1430,232 1418,255 1442,255"/>
-          <polygon points="1430,242 1415,255 1445,255"/>
-          <rect x="1426" y="255" width="7" height="5" fill="#130C04"/>
-        </g>
-
-        <!-- Ground fill -->
-        <rect x="0" y="254" width="1440" height="6" fill="#03040A"/>
-      </svg>
-    </div>
-
     <div class="scroll-cue">SCROLL</div>
   </section>
+
+  <!-- ── STATS TICKER ── -->
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack">
+      <span>1ST</span><span class="ticker-star">✦</span>
+      <span>Regular Season 2024–25</span><span class="ticker-star">✦</span>
+      <span>3RD</span><span class="ticker-star">✦</span>
+      <span>Playoff Finals 2024–25</span><span class="ticker-star">✦</span>
+      <span>2ND</span><span class="ticker-star">✦</span>
+      <span>Regular Season 2025–26</span><span class="ticker-star">✦</span>
+      <span>2ND</span><span class="ticker-star">✦</span>
+      <span>State Finals 2025–26</span><span class="ticker-star">✦</span>
+      <span>Nationals 2026</span><span class="ticker-star">✦</span>
+      <span>Boise, Idaho</span><span class="ticker-star">✦</span>
+    </div>
+  </div>
 
   <!-- ── ABOUT ── -->
   <section id="about">
@@ -1031,22 +1333,22 @@
         <div class="achievements reveal" style="transition-delay:.15s">
           <div class="achievement">
             <div class="achievement-season">2024–25</div>
-            <div class="achievement-num">1ST</div>
+            <div class="achievement-num" data-target="1" data-suffix="ST">1ST</div>
             <div class="achievement-label">Regular Season<br>MHSCS</div>
           </div>
           <div class="achievement">
             <div class="achievement-season">2024–25</div>
-            <div class="achievement-num">3RD</div>
+            <div class="achievement-num" data-target="3" data-suffix="RD">3RD</div>
             <div class="achievement-label">Playoff Finals<br>MHSCS</div>
           </div>
           <div class="achievement">
             <div class="achievement-season">2025–26</div>
-            <div class="achievement-num">2ND</div>
+            <div class="achievement-num" data-target="2" data-suffix="ND">2ND</div>
             <div class="achievement-label">Regular Season<br>MHSCS</div>
           </div>
           <div class="achievement">
             <div class="achievement-season">2025–26</div>
-            <div class="achievement-num">2ND</div>
+            <div class="achievement-num" data-target="2" data-suffix="ND">2ND</div>
             <div class="achievement-label">State Finals<br>@ Univ. of Montana</div>
           </div>
         </div>
@@ -1246,7 +1548,7 @@
         </div>
       </div>
 
-      <!-- Snap! Raise 2025 — sorted: $250, $200, $100×4, $50, $35×3 -->
+      <!-- Snap! Raise 2025 -->
       <div class="panel" id="panel-sr25">
         <div class="panel-head">
           <div class="panel-head-title">Snap! Raise 2025</div>
@@ -1266,8 +1568,7 @@
         </div>
       </div>
 
-      <!-- 2025-26 Season — sorted by total per donor:
-           Sally Mickel $102, then $100×4, $50×3, $40, $35 -->
+      <!-- 2025-26 Season -->
       <div class="panel" id="panel-s26">
         <div class="panel-head">
           <div class="panel-head-title">2025–2026 Season</div>
@@ -1284,11 +1585,11 @@
           <div class="donor-row"><span class="donor-rank">#8</span><span class="donor-name">Heidi Beery</span><div class="donor-pip"></div></div>
           <div class="donor-row"><span class="donor-rank">#9</span><span class="donor-name">John Weisbrich</span><div class="donor-pip"></div></div>
           <div class="donor-row"><span class="donor-rank">#10</span><span class="donor-name">Terry Hamilton</span><div class="donor-pip"></div></div>
+          <div class="donor-row"><span class="donor-rank">#11</span><span class="donor-name">Todd &amp; Holly Mickel</span><div class="donor-pip"></div></div>
         </div>
       </div>
 
-      <!-- 2026 Nationals — sorted by total per donor:
-           Viki Stansbury $120, Kathy Benson $100, Sally Mickel $51, then $50×6 -->
+      <!-- 2026 Nationals -->
       <div class="panel" id="panel-n26">
         <div class="panel-head">
           <div class="panel-head-title">2026 Nationals</div>
@@ -1307,6 +1608,27 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ── DISCORD ── -->
+  <section id="discord">
+    <div class="container">
+      <div class="discord-banner reveal">
+        <div class="discord-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+        </div>
+        <div class="discord-text">
+          <div class="discord-heading">Join Our Discord</div>
+          <div class="discord-sub">Connect with the Sentinel Esports community — get updates, discuss strategy, and hang out with the team.</div>
+        </div>
+        <a href="https://discord.gg/kZgsX6gnEv" target="_blank" rel="noopener noreferrer" class="discord-btn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+          Join Server
+        </a>
+      </div>
     </div>
   </section>
 
@@ -1338,7 +1660,7 @@
 
   <!-- ── FOOTER ── -->
   <footer>
-    <div class="footer-logo">SENTINEL</div>
+    <div class="footer-logo">SENTINEL<em>.</em></div>
     <div class="footer-school">Sentinel High School &nbsp;·&nbsp; Missoula, MT &nbsp;·&nbsp; Esports</div>
     <div class="footer-hr"></div>
     <div class="footer-copy">© 2025–2026 Sentinel Esports &nbsp;·&nbsp; All rights reserved</div>
@@ -1346,17 +1668,30 @@
 
 </div><!-- /content -->
 
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
 <script>
-/* ── CANVAS: BIG SKY STARFIELD + PARTICLES ── */
+/* ── CANVAS: AURORA / NEBULA BACKGROUND ── */
 (function() {
   const canvas = document.getElementById('bgCanvas');
   const ctx    = canvas.getContext('2d');
-  let W, H, stars = [], pts = [];
+  let W, H, pts = [], orbs = [];
 
-  const COLORS = [
-    [255, 70,  85],
-    [0,  212, 255],
-    [123, 47, 255],
+  const PARTICLE_COLORS = [
+    [192, 132, 252],
+    [255, 208,  96],
+    [124,  58, 237],
+    [168, 85,  247],
+  ];
+
+  const ORB_COLORS = [
+    [124,  58, 237],
+    [192, 132, 252],
+    [255, 208,  96],
+    [168,  85, 247],
+    [100,  20, 180],
   ];
 
   function resize() {
@@ -1367,33 +1702,31 @@
   function init() {
     resize();
 
-    /* Montana big-sky starfield */
-    stars = [];
-    const sc = Math.min(Math.floor(W * H / 2800), 220);
-    for (let i = 0; i < sc; i++) {
-      stars.push({
-        x:     Math.random() * W,
-        y:     Math.random() * H * 0.82,
-        r:     Math.random() * 1.1 + 0.15,
-        baseA: Math.random() * 0.55 + 0.08,
-        phase: Math.random() * Math.PI * 2,
-        freq:  Math.random() * 0.6 + 0.2,
-      });
-    }
+    /* aurora orbs */
+    orbs = ORB_COLORS.map((c, i) => ({
+      x:  (i / ORB_COLORS.length) * W + Math.random() * 200 - 100,
+      y:  Math.random() * H * 0.65,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.12,
+      r:  Math.random() * 280 + 160,
+      c,
+      a:  Math.random() * 0.055 + 0.018,
+      pa: Math.random() * Math.PI * 2,
+      pf: Math.random() * 0.0005 + 0.0003,
+    }));
 
-    /* tech network particles */
+    /* particles */
     pts = [];
-    const n = Math.min(Math.floor(W * H / 13000), 70);
+    const n = Math.min(Math.floor(W * H / 12000), 65);
     for (let i = 0; i < n; i++) {
-      const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const c = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)];
       pts.push({
-        x:  Math.random() * W,
-        y:  Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.22,
-        vy: (Math.random() - 0.5) * 0.22,
-        r:  Math.random() * 1.1 + 0.4,
-        a:  Math.random() * 0.4 + 0.08,
-        c
+        x:  Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        r:  Math.random() * 1.3 + 0.3,
+        a:  Math.random() * 0.45 + 0.1,
+        c,
       });
     }
   }
@@ -1402,27 +1735,36 @@
     ctx.clearRect(0, 0, W, H);
     const t = performance.now() * 0.001;
 
-    /* ── stars (Big Sky Country) ── */
-    stars.forEach(s => {
-      const a = s.baseA * (0.55 + 0.45 * Math.sin(t * s.freq + s.phase));
+    /* aurora blobs */
+    orbs.forEach(o => {
+      o.pa += o.pf;
+      const pulseA = o.a * (0.7 + 0.3 * Math.sin(o.pa));
+      const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+      g.addColorStop(0, `rgba(${o.c[0]},${o.c[1]},${o.c[2]},${pulseA})`);
+      g.addColorStop(0.5, `rgba(${o.c[0]},${o.c[1]},${o.c[2]},${pulseA * 0.4})`);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(210,225,255,${a})`;
+      ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+      ctx.fillStyle = g;
       ctx.fill();
+      o.x += o.vx; o.y += o.vy;
+      if (o.x < -o.r)     o.x = W + o.r;
+      if (o.x > W + o.r)  o.x = -o.r;
+      if (o.y < -o.r)     o.y = H + o.r;
+      if (o.y > H + o.r)  o.y = -o.r;
     });
 
-    /* ── particle network ── */
+    /* particle network */
     for (let i = 0; i < pts.length; i++) {
       for (let j = i + 1; j < pts.length; j++) {
-        const dx = pts[i].x - pts[j].x;
-        const dy = pts[i].y - pts[j].y;
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
         const d  = Math.sqrt(dx * dx + dy * dy);
-        if (d < 130) {
+        if (d < 120) {
           ctx.beginPath();
           ctx.moveTo(pts[i].x, pts[i].y);
           ctx.lineTo(pts[j].x, pts[j].y);
-          ctx.strokeStyle = `rgba(255,70,85,${0.06 * (1 - d / 130)})`;
-          ctx.lineWidth = 0.6;
+          ctx.strokeStyle = `rgba(192,132,252,${0.08 * (1 - d / 120)})`;
+          ctx.lineWidth = 0.5;
           ctx.stroke();
         }
       }
@@ -1442,8 +1784,7 @@
   }
 
   window.addEventListener('resize', init);
-  init();
-  draw();
+  init(); draw();
 })();
 
 /* ── SCROLL REVEAL ── */
@@ -1451,6 +1792,291 @@ const ro = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+/* ── ACHIEVEMENT COUNTER ANIMATION ── */
+(function() {
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.dataset.suffix || '';
+    const duration = 1400;
+    const start = performance.now();
+    const step = now => {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val = Math.round(ease * target);
+      el.textContent = val + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target + suffix;
+    };
+    requestAnimationFrame(step);
+  }
+
+  const achObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.counted) {
+        e.target.dataset.counted = '1';
+        animateCounter(e.target);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  document.querySelectorAll('.achievement-num[data-target]').forEach(el => achObs.observe(el));
+})();
+
+/* ── TYPEWRITER ON HERO TAG ── */
+(function() {
+  const el = document.querySelector('.hero-tag');
+  const full = el.textContent.trim();
+  el.textContent = '';
+  el.style.opacity = '1';
+  el.style.animation = 'none';
+  el.style.transform = 'none';
+  let i = 0;
+  setTimeout(() => {
+    const t = setInterval(() => {
+      el.textContent = full.slice(0, ++i);
+      if (i >= full.length) clearInterval(t);
+    }, 38);
+  }, 3400);
+})();
+
+/* ── 3D CARD TILT ── */
+(function() {
+  document.querySelectorAll('.player-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transition = 'transform 0.08s ease, border-color 0.35s, box-shadow 0.35s';
+    });
+    card.addEventListener('mousemove', e => {
+      const r   = card.getBoundingClientRect();
+      const x   = (e.clientX - r.left) / r.width  - 0.5;
+      const y   = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `translateY(-8px) rotateY(${x * 18}deg) rotateX(${-y * 18}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.5s ease, border-color 0.35s, box-shadow 0.35s';
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ── SCROLL SPY ── */
+(function() {
+  const links = document.querySelectorAll('.nav-links a[href^="#"]');
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const spy = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(a => a.classList.toggle('spy-active', a.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => spy.observe(s));
+})();
+
+/* ── HERO PARALLAX ON SCROLL ── */
+(function() {
+  const bg = document.querySelector('.hero-photo-bg');
+  if (!bg) return;
+  const onScroll = () => {
+    const y = window.scrollY;
+    bg.style.transform = `translateY(calc(${y * 0.28}px))`;
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+
+/* ── FLOATING HERO SPARKLES ── */
+(function() {
+  const hero = document.getElementById('home');
+  function spawn() {
+    const s = document.createElement('div');
+    s.className = 'hero-spark';
+    const size = Math.random() * 3 + 1.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${10 + Math.random() * 80}%;
+      bottom:${10 + Math.random() * 30}%;
+      animation-duration:${3.5 + Math.random() * 4}s;
+      animation-delay:${Math.random() * 2}s;
+      opacity:0;
+    `;
+    hero.appendChild(s);
+    setTimeout(() => s.remove(), 8000);
+  }
+  setInterval(spawn, 600);
+  for (let i = 0; i < 6; i++) spawn();
+})();
+
+/* ── FEATURE 1: INTRO SCREEN ── */
+(function() {
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => {
+    document.getElementById('intro-screen').classList.add('gone');
+    document.body.style.overflow = '';
+  }, 2500);
+})();
+
+/* ── FEATURE 2: SCROLL PROGRESS BAR ── */
+(function() {
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    bar.style.width = pct + '%';
+  }, { passive: true });
+})();
+
+/* ── FEATURE 3: STATS TICKER DUPLICATE ── */
+(function() {
+  const track = document.getElementById('tickerTrack');
+  if (track) track.innerHTML += track.innerHTML;
+})();
+
+/* ── FEATURE 4: MOUSE TRAIL PARTICLES ── */
+(function() {
+  const COLORS = ['#FFD060','#C084FC','#7C3AED','#A855F7','#F0A500'];
+  let last = 0;
+  document.addEventListener('mousemove', e => {
+    const now = Date.now();
+    if (now - last < 40) return;
+    last = now;
+    const p = document.createElement('div');
+    const size = Math.random() * 5 + 2;
+    p.style.cssText = `
+      position:fixed;pointer-events:none;z-index:9997;border-radius:50%;
+      width:${size}px;height:${size}px;
+      background:${COLORS[Math.floor(Math.random()*COLORS.length)]};
+      box-shadow:0 0 ${size*2}px currentColor;
+      left:${e.clientX}px;top:${e.clientY}px;
+      animation:trail-fade 0.55s ease forwards;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 560);
+  });
+})();
+
+/* ── FEATURE 5: CLICK RIPPLE ── */
+document.addEventListener('click', e => {
+  const r = document.createElement('div');
+  r.className = 'click-ripple';
+  r.style.left = e.clientX + 'px';
+  r.style.top  = e.clientY + 'px';
+  document.body.appendChild(r);
+  setTimeout(() => r.remove(), 700);
+});
+
+/* ── FEATURE 6: SHOOTING STARS IN HERO ── */
+(function() {
+  const hero = document.getElementById('home');
+  function shoot() {
+    const s = document.createElement('div');
+    s.className = 'shoot-star';
+    const angle = 20 + Math.random() * 25;
+    s.style.cssText = `
+      top:${5 + Math.random() * 55}%;
+      left:${Math.random() * 75}%;
+      transform:rotate(${angle}deg);
+      transform-origin: left center;
+      animation-duration:${0.7 + Math.random() * 0.6}s;
+    `;
+    hero.appendChild(s);
+    setTimeout(() => s.remove(), 1400);
+  }
+  setInterval(shoot, 2200);
+  setTimeout(shoot, 1000);
+  setTimeout(shoot, 1800);
+})();
+
+/* ── FEATURE 7: TAB VISIBILITY TITLE CHANGE ── */
+(function() {
+  const base = document.title;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      document.title = '👾 Come Back! | Sentinel Esports';
+    } else {
+      document.title = '⚡ Welcome Back! | Sentinel Esports';
+      setTimeout(() => { document.title = base; }, 2500);
+    }
+  });
+})();
+
+/* ── FEATURE 8: DISCORD CLIPBOARD + TOAST ── */
+(function() {
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => t.remove(), 350);
+    }, 2800);
+  }
+  const btn = document.querySelector('.discord-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText('https://discord.gg/kZgsX6gnEv').catch(() => {});
+      showToast('✓ Invite link copied to clipboard!');
+    });
+  }
+})();
+
+/* ── FEATURE 9: KONAMI CODE EASTER EGG ── */
+(function() {
+  const CODE = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let idx = 0;
+  document.addEventListener('keydown', e => {
+    idx = e.key === CODE[idx] ? idx + 1 : 0;
+    if (idx === CODE.length) { idx = 0; triggerKonami(); }
+  });
+  function triggerKonami() {
+    const ov = document.createElement('div');
+    ov.className = 'konami-overlay';
+    ov.innerHTML = '<div class="konami-text">CHEAT CODE ACTIVATED</div><div class="konami-sub">// Sentinel Esports //</div>';
+    const COLS = ['#FFD060','#C084FC','#7C3AED','#fff'];
+    for (let i = 0; i < 90; i++) {
+      const c = document.createElement('div');
+      c.className = 'konfetti';
+      const w = 4 + Math.random() * 7, h = 4 + Math.random() * 12;
+      c.style.cssText = `
+        left:${Math.random()*100}vw;width:${w}px;height:${h}px;
+        background:${COLS[Math.floor(Math.random()*COLS.length)]};
+        border-radius:${Math.random()>.5?'50%':'2px'};
+        animation-delay:${Math.random()*.6}s;
+        animation-duration:${1.4+Math.random()*1.6}s;
+      `;
+      ov.appendChild(c);
+    }
+    document.body.appendChild(ov);
+    setTimeout(() => ov.remove(), 4000);
+  }
+})();
+
+/* ── FEATURE 10: ACHIEVEMENT CARD 3D TILT ── */
+(function() {
+  document.querySelectorAll('.achievement').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transition = 'transform 0.08s ease, box-shadow 0.3s';
+    });
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `translateY(-5px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg) scale(1.03)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform 0.5s ease, box-shadow 0.3s';
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ── SCROLL TO TOP ── */
+(function() {
+  const btn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
 
 /* ── TABS ── */
 function showTab(id, btn) {
