@@ -21,7 +21,7 @@
       --deep:        #7C3AED;
       --violet:      #A855F7;
       --text:        #FFFFFF;
-      --muted:       #C8B8E8;
+      --muted:       #E0D4F8;
       --card:        rgba(124,58,237,0.10);
       --border:      rgba(192,132,252,0.18);
     }
@@ -91,7 +91,7 @@
     .nav-links { display: flex; gap: 2.2rem; list-style: none; }
     .nav-links a {
       color: var(--muted); text-decoration: none;
-      font-size: 0.78rem; font-weight: 600;
+      font-size: 0.9rem; font-weight: 600;
       letter-spacing: 0.18em; text-transform: uppercase;
       transition: color 0.25s;
       position: relative;
@@ -287,7 +287,7 @@
       display: flex; flex-direction: column; align-items: center;
       gap: 0.4rem; color: var(--muted);
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem; letter-spacing: 0.25em;
+      font-size: 0.74rem; letter-spacing: 0.25em;
       animation: bob 2.5s ease infinite;
       z-index: 2;
     }
@@ -305,10 +305,10 @@
     .section-label {
       display: block;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--purple);
-      letter-spacing: 0.45em; text-transform: uppercase;
+      font-size: 0.82rem; color: #C084FC;
+      letter-spacing: 0.4em; text-transform: uppercase;
       margin-bottom: 0.75rem;
-      text-shadow: 0 0 16px rgba(192,132,252,0.7);
+      text-shadow: 0 0 18px rgba(192,132,252,0.9);
     }
     .section-title {
       font-family: 'Orbitron', monospace;
@@ -337,91 +337,740 @@
       box-shadow: 0 0 10px var(--gold);
     }
 
-    /* ─── TEAM ─── */
+    /* ─── TEAM / TRADING CARDS ─── */
     #team { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
 
     .team-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1.2rem;
-      max-width: 1000px; margin: 0 auto;
+      gap: 1.6rem;
+      max-width: 1300px; margin: 0 auto;
+    }
+    .coaches-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.6rem;
+      max-width: 660px; margin: 0 auto;
     }
 
-    .player-card {
-      position: relative; padding: 2rem 1rem;
-      background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(7,1,14,0.7));
-      border: 1px solid var(--border);
-      border-radius: 10px; text-align: center;
-      cursor: default;
-      transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+    /* Outer shell (sets height for absolute children) */
+    .tc { min-height: 400px; position: relative; cursor: pointer; }
+
+    /* 3-D flip inner */
+    .tc-inner {
+      width: 100%; min-height: 400px;
+      position: relative; transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+    }
+    .tc-inner.flipped { transform: rotateY(180deg); }
+
+    /* Shared face styles */
+    .tc-front, .tc-back {
+      position: absolute; inset: 0; border-radius: 12px;
       overflow: hidden;
-    }
-    .player-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), var(--purple), var(--gold), transparent);
-      background-size: 200% 100%;
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.5s ease;
-    }
-    .player-card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(255,208,96,0.4);
-      box-shadow:
-        0 24px 64px rgba(255,208,96,0.12),
-        0 0 40px rgba(124,58,237,0.18),
-        inset 0 0 30px rgba(124,58,237,0.06);
-    }
-    .player-card:hover::before {
-      transform: scaleX(1);
-      animation: shimmer-bar 1.8s ease infinite;
+      backface-visibility: hidden; -webkit-backface-visibility: hidden;
     }
 
-    @keyframes shimmer-bar {
-      0%   { background-position: -100% 0; }
-      100% { background-position: 200%  0; }
+    /* ── FRONT ── */
+    .tc-front {
+      background: linear-gradient(155deg, rgba(124,58,237,0.15), rgba(7,1,14,0.93));
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .tc:hover .tc-front {
+      border-color: rgba(255,208,96,0.38);
+      box-shadow: 0 18px 55px rgba(255,208,96,0.09), 0 0 30px rgba(124,58,237,0.16);
     }
 
-    .player-number-badge {
+    /* Holographic top strip */
+    .tc-holo {
+      width: 100%; height: 3px; flex-shrink: 0;
+      background: linear-gradient(90deg, #ff00ff, #00eeff, #ffff00, #ff6600, #ff00ff);
+      background-size: 300%;
+      animation: holoShift 4s linear infinite;
+    }
+    @keyframes holoShift { to { background-position: 300% 0; } }
+
+    /* Top corner labels */
+    .tc-num {
       position: absolute; top: 10px; right: 10px;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.6rem; color: var(--muted);
-      letter-spacing: 0.05em;
+      font-size: 0.55rem; color: rgba(192,132,252,0.38); letter-spacing: 0.08em;
     }
+    .tc-rarity {
+      position: absolute; top: 10px; left: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.1em;
+      padding: 2px 6px; border-radius: 3px; text-transform: uppercase;
+    }
+    .tc-rarity.sent  { background:rgba(255,208,96,0.12);  color:#FFD060; border:1px solid rgba(255,208,96,0.32); }
+    .tc-rarity.ctrl  { background:rgba(192,132,252,0.14); color:#C084FC; border:1px solid rgba(192,132,252,0.32); }
+    .tc-rarity.duel  { background:rgba(255,80,80,0.12);   color:#ff7070; border:1px solid rgba(255,80,80,0.3); }
+    .tc-rarity.init  { background:rgba(60,200,255,0.12);  color:#3cc8ff; border:1px solid rgba(60,200,255,0.3); }
+    .tc-rarity.staff { background:rgba(74,222,128,0.12);  color:#4ade80; border:1px solid rgba(74,222,128,0.3); }
+    .tc-rarity.capt  { background:rgba(255,208,96,0.2);   color:#FFD060; border:1px solid rgba(255,208,96,0.55); text-shadow:0 0 8px rgba(255,208,96,0.5); }
 
-    .player-avatar {
-      width: 64px; height: 64px; border-radius: 50%;
+    /* Avatar circle */
+    .tc-av {
+      width: 86px; height: 86px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace; font-size: 1.9rem; font-weight: 900;
+      margin: 2.2rem auto 1.1rem; position: relative;
+    }
+    .tc-av-ring {
+      position: absolute; inset: -5px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.14);
+      animation: tcRing 2.8s ease infinite;
+    }
+    @keyframes tcRing {
+      0%,100% { transform:scale(1); opacity:.5; }
+      50% { transform:scale(1.1); opacity:.1; }
+    }
+    /* Avatar role colours */
+    .av-v  { background: linear-gradient(135deg,#FFD060,#E0A500); color:#1a0a00; }
+    .av-f  { background: linear-gradient(135deg,#7C3AED,#C084FC); color:#fff; }
+    .av-n  { background: linear-gradient(135deg,#EF4444,#FF7B7B); color:#fff; }
+    .av-t  { background: linear-gradient(135deg,#C084FC,#7C3AED); color:#fff; }
+    .av-r  { background: linear-gradient(135deg,#3B82F6,#60C8FF); color:#fff; }
+    .av-a  { background: linear-gradient(135deg,#10B981,#4ade80); color:#fff; }
+    .av-tr { background: linear-gradient(135deg,#6366F1,#4ade80); color:#fff; }
+
+    /* Name block */
+    .tc-name {
       font-family: 'Orbitron', monospace;
-      font-size: 1.4rem; font-weight: 700;
-      margin: 0 auto 1rem;
-      position: relative;
+      font-size: 1.1rem; font-weight: 700;
+      letter-spacing: 0.05em; text-align: center;
+      margin-bottom: 0.18rem; padding: 0 0.6rem;
     }
-    .player-avatar-ring {
-      position: absolute; inset: -4px; border-radius: 50%;
-      border: 1px solid rgba(255,208,96,0.5);
-      animation: pulse-ring 2.5s ease infinite;
-    }
-    @keyframes pulse-ring {
-      0%,100% { box-shadow: 0 0 0 0 rgba(255,208,96,0.35); }
-      50%      { box-shadow: 0 0 0 7px rgba(255,208,96,0); }
+    .tc-ign {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.76rem; color: var(--muted);
+      letter-spacing: 0.14em; text-align: center; margin-bottom: 0.65rem;
     }
 
-    .av-1 { background: linear-gradient(135deg, #7C3AED, #C084FC); }
-    .av-2 { background: linear-gradient(135deg, #A855F7, #FFD060); }
-    .av-3 { background: linear-gradient(135deg, #FFD060, #E0A500); }
-    .av-4 { background: linear-gradient(135deg, #C084FC, #7C3AED); }
-    .av-5 { background: linear-gradient(135deg, #FFD060, #A855F7); }
+    /* Role/year tags */
+    .tc-tags { display:flex; gap:.35rem; flex-wrap:wrap; justify-content:center; padding:0 .6rem; margin-bottom:.9rem; }
+    .tc-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.64rem; letter-spacing: 0.07em;
+      padding: 3px 10px; border-radius: 4px;
+      background: rgba(124,58,237,0.18); border: 1px solid rgba(124,58,237,0.3);
+      color: var(--muted); text-transform: uppercase;
+    }
+    .tc-tag.gold  { background:rgba(255,208,96,0.1);  border-color:rgba(255,208,96,0.28);  color:var(--gold); }
+    .tc-tag.green { background:rgba(74,222,128,0.1);  border-color:rgba(74,222,128,0.28);  color:#4ade80; }
+    .tc-tag.red   { background:rgba(255,80,80,0.1);   border-color:rgba(255,80,80,0.28);   color:#ff7070; }
+    .tc-tag.blue  { background:rgba(60,200,255,0.1);  border-color:rgba(60,200,255,0.28);  color:#3cc8ff; }
 
-    .player-name {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.82rem; font-weight: 700;
-      letter-spacing: 0.04em; margin-bottom: 0.3rem;
+    /* Flip hint */
+    .tc-flip-hint {
+      position: absolute; bottom: 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem; color: rgba(192,132,252,0.5); letter-spacing: 0.18em;
     }
-    .player-game {
-      font-size: 0.7rem; color: var(--muted);
-      letter-spacing: 0.15em; text-transform: uppercase;
+    /* Bottom vignette */
+    .tc-front::after {
+      content:''; position:absolute; bottom:0; left:0; right:0; height:55px;
+      background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+      pointer-events:none;
     }
+
+    /* ── BACK ── */
+    .tc-back {
+      background: linear-gradient(155deg, rgba(6,1,16,0.98), rgba(18,3,45,0.97));
+      border: 1px solid rgba(192,132,252,0.2);
+      transform: rotateY(180deg);
+      display: flex; flex-direction: column;
+      padding: 1.1rem 1.1rem 0.7rem;
+      transition: border-color 0.3s;
+    }
+    .tc:hover .tc-back { border-color: rgba(192,132,252,0.4); }
+    .tc-back-holo {
+      position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,#ff00ff,#00eeff,#ffff00,#ff00ff);
+      background-size:200%; animation:holoShift 3s linear infinite reverse;
+    }
+
+    /* Back header */
+    .tc-bh {
+      display:flex; align-items:center; justify-content:space-between;
+      padding-bottom:.5rem; border-bottom:1px solid rgba(192,132,252,0.12);
+      margin-bottom:.6rem;
+    }
+    .tc-bh-name { font-family:'Orbitron',monospace; font-size:.92rem; font-weight:700; letter-spacing:.06em; }
+    .tc-bh-num  { font-family:'Share Tech Mono',monospace; font-size:.72rem; color:rgba(192,132,252,.6); }
+
+    /* Stats row */
+    .tc-stats {
+      display:flex; justify-content:space-around;
+      padding:.42rem 0; margin-bottom:.6rem;
+      background:rgba(124,58,237,0.08); border-radius:6px;
+      border:1px solid rgba(124,58,237,0.14);
+    }
+    .tc-stat { text-align:center; }
+    .tc-sv { font-family:'Orbitron',monospace; font-size:1rem; font-weight:700; color:var(--gold); line-height:1; }
+    .tc-sk { font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; margin-top:4px; }
+
+    /* Detail fields */
+    .tc-f  { margin-bottom:.55rem; }
+    .tc-fl { font-family:'Share Tech Mono',monospace; font-size:.6rem; letter-spacing:.18em; color:rgba(192,132,252,.75); text-transform:uppercase; margin-bottom:3px; display:block; }
+    .tc-fv { font-size:.84rem; color:var(--text); line-height:1.5; }
+
+    /* Quote */
+    .tc-quote {
+      margin-top:auto; padding:.58rem .7rem;
+      border-left:2px solid var(--gold);
+      background:rgba(255,208,96,0.04);
+      font-size:.78rem; color:var(--muted);
+      font-style:italic; line-height:1.55;
+      border-radius:0 4px 4px 0;
+    }
+    /* Flip back hint */
+    .tc-back-hint {
+      text-align:center; margin-top:.55rem;
+      font-family:'Share Tech Mono',monospace;
+      font-size:.62rem; color:rgba(192,132,252,.5); letter-spacing:.18em;
+    }
+
+    /* ─── CARD PACK STAGE ─── */
+    #pack-stage {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 520px; padding-bottom: 3rem; perspective: 1000px;
+    }
+
+    #pack-outer {
+      width: 270px; height: 420px; position: relative; cursor: pointer;
+      animation: packBob 3.2s ease-in-out infinite;
+      filter: drop-shadow(0 24px 60px rgba(124,58,237,0.55)) drop-shadow(0 0 40px rgba(255,208,96,0.2));
+    }
+    @keyframes packBob {
+      0%,100% { transform: translateY(0) rotate(-1.5deg); }
+      50%      { transform: translateY(-14px) rotate(1.5deg); }
+    }
+    /* Smash mechanic — squash-and-stretch on each hit */
+    #pack-outer.pump { animation: packPump 0.4s cubic-bezier(0.34,1.5,0.64,1) forwards !important; }
+    @keyframes packPump {
+      0%   { transform: scale(1) rotate(0deg); }
+      18%  { transform: scale(1.1, 0.92) rotate(-2.5deg); }
+      38%  { transform: scale(0.91, 1.1) rotate(3deg); }
+      60%  { transform: scale(1.05, 0.96) rotate(-1.2deg); }
+      80%  { transform: scale(0.98, 1.02) rotate(0.5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    /* Shake only on final burst */
+    #pack-outer.shake { animation: packShake 0.4s cubic-bezier(.36,.07,.19,.97) forwards !important; }
+    @keyframes packShake {
+      15%,85% { transform: translateX(-7px) rotate(-3deg); }
+      30%,70% { transform: translateX(9px)  rotate(3.5deg); }
+      45%,55% { transform: translateX(-11px) rotate(-4deg); }
+      100%    { transform: none; }
+    }
+
+    /* Progressive crack lines — appear as hits land */
+    .pack-crack {
+      position:absolute; z-index:7; pointer-events:none;
+      height:2px; border-radius:1px;
+      background:rgba(255,208,96,0.9);
+      box-shadow:0 0 8px rgba(255,208,96,0.8), 0 0 3px #fff;
+      opacity:0; transition:opacity 0.12s ease;
+    }
+    .pack-crack-1 { top:46%; left:6%;  width:36%; transform:rotate(-14deg); }
+    .pack-crack-2 { top:54%; right:5%; width:30%; transform:rotate(11deg); }
+    .pack-crack-3 { top:50%; left:28%; width:44%; transform:rotate(-4deg); }
+
+    /* State progression after each hit */
+    #pack-outer.state-1 {
+      filter: drop-shadow(0 22px 55px rgba(124,58,237,0.8)) drop-shadow(0 0 70px rgba(255,208,96,0.55)) !important;
+    }
+    #pack-outer.state-1 .pack-crack-1 { opacity:1; }
+
+    #pack-outer.state-2 {
+      filter: drop-shadow(0 22px 55px rgba(192,132,252,0.95)) drop-shadow(0 0 110px rgba(255,208,96,0.9)) !important;
+      animation: packBob 1.1s ease-in-out infinite !important;
+    }
+    #pack-outer.state-2 .pack-crack-1,
+    #pack-outer.state-2 .pack-crack-2,
+    #pack-outer.state-2 .pack-crack-3 { opacity:1; }
+
+    /* Two halves for the tear-open */
+    .pack-half {
+      position: absolute; left: 0; right: 0;
+      overflow: hidden;
+      transition: transform 0.6s cubic-bezier(0.4,0,1,1);
+      will-change: transform;
+    }
+    .pack-half-t { top: 0; height: 50%; border-radius: 16px 16px 0 0; }
+    .pack-half-b { bottom: 0; height: 50%; border-radius: 0 0 16px 16px; }
+
+    /* Inner content block (full pack height, clipped by half wrapper) */
+    .pack-inner {
+      position: absolute; left: 0; right: 0; height: 420px;
+      background: linear-gradient(155deg, #1E0048 0%, #120030 40%, #2A006A 70%, #1A0045 100%);
+      border: 2px solid rgba(255,208,96,0.55);
+      border-radius: 16px;
+      display: flex; flex-direction: column; align-items: center;
+      overflow: hidden;
+    }
+    .pack-half-t .pack-inner { top: 0;    border-bottom: none; border-radius: 16px 16px 0 0; }
+    .pack-half-b .pack-inner { bottom: 0; border-top: none;    border-radius: 0 0 16px 16px; }
+
+    /* Inner glow */
+    .pack-inner::before {
+      content:''; position:absolute; inset:0;
+      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(124,58,237,0.2), transparent 70%);
+      pointer-events:none;
+    }
+
+    /* Holo strips */
+    .pack-holo-t {
+      width:100%; height:14px; flex-shrink:0;
+      background: linear-gradient(90deg, #ff00ff, #ff6600, #ffff00, #00ff00, #00eeff, #ff00ff);
+      background-size: 300%; animation: holoShift 3s linear infinite;
+    }
+    .pack-holo-b {
+      position:absolute; bottom:0; left:0; right:0; height:14px;
+      background: linear-gradient(90deg, #00eeff, #ffff00, #ff6600, #ff00ff, #00eeff);
+      background-size: 300%; animation: holoShift 3s linear infinite reverse;
+    }
+    /* Show holo-b only in the bottom half */
+    .pack-half-t .pack-holo-b { display: none; }
+    .pack-half-b .pack-holo-t { display: none; }
+
+    /* Diagonal shine sweep */
+    .pack-shine {
+      position:absolute; top:0; left:-100%; width:55%; height:100%;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.1) 48%, rgba(255,255,255,0.05) 52%, transparent 70%);
+      animation: packShine 4s ease-in-out infinite 0.5s; pointer-events:none; z-index:5;
+    }
+    @keyframes packShine { 0%,100%{left:-100%} 45%,55%{left:160%} }
+
+    /* Logo */
+    .pack-logo {
+      width: 150px; height: 150px; object-fit: contain;
+      margin: 14px auto 6px; flex-shrink:0;
+      filter: drop-shadow(0 0 20px rgba(255,208,96,0.55));
+    }
+
+    /* Fallback if image missing */
+    .pack-logo-fallback {
+      width:150px; height:150px; border-radius:50%;
+      background:linear-gradient(135deg,#7C3AED,#FFD060);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-size:2.2rem; font-weight:900;
+      color:#fff; margin:14px auto 6px; flex-shrink:0;
+    }
+
+    .pack-name {
+      font-family:'Orbitron',monospace; font-size:.9rem; font-weight:900;
+      letter-spacing:.13em; color:#FFD060;
+      text-shadow:0 0 22px rgba(255,208,96,0.65);
+      text-align:center; padding:0 1rem; flex-shrink:0;
+    }
+    .pack-sub {
+      font-family:'Share Tech Mono',monospace; font-size:.5rem;
+      letter-spacing:.3em; color:rgba(192,132,252,.7);
+      text-align:center; margin-top:3px; flex-shrink:0;
+    }
+    .pack-badge {
+      margin-top:10px; padding:3px 13px; border-radius:20px;
+      border:1px solid rgba(255,208,96,0.38);
+      background:rgba(255,208,96,0.07);
+      font-family:'Share Tech Mono',monospace; font-size:.47rem;
+      letter-spacing:.2em; color:rgba(255,208,96,.75);
+      flex-shrink:0;
+    }
+
+    /* Perforated tear line */
+    .pack-tear-line {
+      position:absolute; top:50%; left:-3px; right:-3px; height:1px; z-index:6;
+      background: repeating-linear-gradient(90deg,
+        transparent 0, transparent 6px,
+        rgba(255,208,96,0.55) 6px, rgba(255,208,96,0.55) 10px);
+      transition: opacity 0.2s;
+    }
+
+    /* Sparkles */
+    .pack-spark {
+      position:absolute; border-radius:50%;
+      width:4px; height:4px; background:var(--gold);
+      box-shadow:0 0 6px var(--gold);
+      animation:pSpark linear infinite;
+      opacity:0; pointer-events:none; z-index:10;
+    }
+    @keyframes pSpark {
+      0%   { opacity:0; transform:translate(0,0) scale(0); }
+      15%  { opacity:1; }
+      85%  { opacity:.5; }
+      100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(.2); }
+    }
+
+    /* Click hint */
+    .pack-hint {
+      position:absolute; bottom:-44px; width:100%; text-align:center;
+      font-family:'Share Tech Mono',monospace; font-size:.72rem;
+      letter-spacing:.22em; color:rgba(192,132,252,.6);
+      animation:hintPulse 2s ease infinite;
+      transition:opacity 0.3s;
+    }
+    @keyframes hintPulse { 50% { opacity:1; color:rgba(255,208,96,.9); } 0%,100%{opacity:.45;} }
+
+    .pack-skip-btn {
+      display:block; margin:2.8rem auto 0;
+      background:none; border:none;
+      font-family:'Share Tech Mono',monospace; font-size:0.72rem;
+      letter-spacing:0.28em; text-transform:uppercase;
+      color:rgba(192,132,252,0.35); cursor:pointer;
+      padding:0.4rem 1rem;
+      transition:color 0.25s, text-shadow 0.25s;
+    }
+    .pack-skip-btn:hover {
+      color:rgba(255,208,96,0.65);
+      text-shadow:0 0 14px rgba(255,208,96,0.3);
+    }
+
+    /* Open states — halves fly apart dramatically */
+    #pack-outer.open .pack-half-t { transform: translateY(-150%) rotate(-9deg) scale(0.88); }
+    #pack-outer.open .pack-half-b { transform: translateY(150%) rotate(9deg) scale(0.88); }
+    #pack-outer.open .pack-tear-line { opacity:0; }
+    #pack-outer.open .pack-crack { opacity:0 !important; }
+    #pack-outer.open .pack-hint { opacity:0; }
+
+    /* Full-screen flash */
+    #pack-flash {
+      position:fixed; inset:0; z-index:9999; pointer-events:none;
+      background:radial-gradient(ellipse at center, rgba(255,255,255,.95) 0%, rgba(192,132,252,.35) 40%, transparent 70%);
+      opacity:0; transition:opacity 0.1s ease;
+    }
+    #pack-flash.on { opacity:1; }
+
+    /* Card deal-in animation (one at a time) */
+    @keyframes cardDeal {
+      0%   { opacity:0; transform:translateY(70px) scale(.78) rotate(var(--deal-rot,0deg)); filter:brightness(2); }
+      45%  { opacity:1; transform:translateY(-10px) scale(1.06) rotate(0deg); filter:brightness(1.8); }
+      68%  { transform:translateY(4px) scale(.98) rotate(0deg); filter:brightness(1); }
+      84%  { transform:translateY(-2px) scale(1.01); }
+      100% { opacity:1; transform:none; filter:brightness(1); }
+    }
+    .tc.dealing { animation:cardDeal .6s cubic-bezier(.34,1.5,.64,1) both; }
+
+    /* Gold reveal glow after card lands */
+    @keyframes revealGlow {
+      0%   { box-shadow:0 0 0 0 rgba(255,208,96,0); }
+      18%  { box-shadow:0 0 45px 18px rgba(255,208,96,0.75), 0 0 90px 35px rgba(255,208,96,0.25); }
+      100% { box-shadow:0 0 0 0 rgba(255,208,96,0); }
+    }
+    .tc.just-revealed { animation:revealGlow 1.1s ease-out forwards; border-radius:12px; }
+
+    /* Skip button */
+    #pack-skip {
+      position:fixed; bottom:2rem; right:2rem; z-index:1001;
+      font-family:'Share Tech Mono',monospace; font-size:0.68rem;
+      letter-spacing:0.22em; text-transform:uppercase;
+      padding:.7rem 1.5rem; border-radius:6px; cursor:pointer;
+      background:rgba(7,1,14,0.88); border:1px solid rgba(192,132,252,0.38);
+      color:var(--muted); backdrop-filter:blur(10px);
+      transition:all 0.28s; opacity:0; pointer-events:none;
+      transform:translateY(12px);
+    }
+    #pack-skip.visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+    #pack-skip:hover { border-color:var(--gold); color:var(--gold); box-shadow:0 0 22px rgba(255,208,96,0.2); }
+
+    /* Hold-to-tear progress ring SVG */
+    .pack-ring-svg {
+      position:absolute; top:-16px; left:-16px;
+      width:calc(100% + 32px); height:calc(100% + 32px);
+      pointer-events:none; z-index:20; overflow:visible;
+    }
+    #packRing {
+      stroke:#FFD060; fill:none; stroke-width:3; stroke-linecap:round;
+      filter:drop-shadow(0 0 6px rgba(255,208,96,0.7));
+      transition:stroke-dashoffset 0.05s linear;
+    }
+
+    /* ─── CARDS BURST FROM PACK ─── */
+    @keyframes burstFly {
+      0%   { opacity:0; transform:translate(0,0) rotate(0deg) scale(0.35); filter:blur(8px) brightness(4); }
+      14%  { opacity:1; filter:blur(0) brightness(1.8); }
+      52%  { opacity:1; transform:translate(calc(var(--bx)*.62),calc(var(--by)*.62)) rotate(calc(var(--br)*.62)) scale(1.08); filter:brightness(1); }
+      100% { opacity:0; transform:translate(var(--bx),var(--by)) rotate(var(--br)) scale(0.38); filter:blur(5px); }
+    }
+    .burst-card {
+      position:fixed; width:112px; height:160px; border-radius:10px;
+      background:linear-gradient(155deg,#2E0075 0%,#0E0025 48%,#1E0050 100%);
+      border:1.5px solid rgba(255,208,96,0.9);
+      box-shadow:0 0 35px rgba(124,58,237,0.9),0 0 70px rgba(255,208,96,0.4),inset 0 0 22px rgba(124,58,237,0.5);
+      pointer-events:none; z-index:8000;
+      animation:burstFly 0.95s cubic-bezier(0.1,0,0.45,1) both;
+      overflow:hidden; transform-origin:center center;
+    }
+    .burst-card::before {
+      content:''; position:absolute; top:7px; left:0; right:0; height:3px;
+      background:linear-gradient(90deg,#ff00ff,#00eeff,#ffff00,#ff00ff);
+      background-size:300%; animation:holoShift 0.5s linear infinite;
+    }
+    .burst-card::after {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(135deg,transparent 25%,rgba(255,255,255,0.15) 48%,transparent 72%);
+    }
+
+    /* ─── CARD REVEAL OVERLAY ─── */
+    #cr-overlay {
+      position:fixed; inset:0; z-index:6000;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      opacity:0; pointer-events:none;
+      background:rgba(2,0,10,0.97);
+      transition:opacity 0.55s ease;
+      overflow:hidden;
+      --cr-tint: rgba(124,58,237,0.2);
+    }
+    #cr-overlay.active { opacity:1; pointer-events:auto; }
+    .cr-bg-grid {
+      position:absolute; inset:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.07) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(124,58,237,0.07) 1px,transparent 1px);
+      background-size:44px 44px;
+      animation: gridDrift 12s linear infinite;
+    }
+    @keyframes gridDrift {
+      0%   { background-position: 0 0; }
+      100% { background-position: 44px 44px; }
+    }
+    .cr-scanlines {
+      position:absolute; inset:0; pointer-events:none; z-index:1;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.12) 3px,rgba(0,0,0,0.12) 4px);
+    }
+    .cr-spotlight {
+      position:absolute; inset:0; pointer-events:none; z-index:2;
+      background:radial-gradient(ellipse 58% 80% at 50% 48%, var(--cr-tint) 0%, transparent 65%);
+      transition: background 1s ease;
+    }
+    .cr-counter {
+      position:relative; z-index:10;
+      font-family:'Share Tech Mono',monospace; letter-spacing:0.35em;
+      color:rgba(255,208,96,0.55); text-transform:uppercase;
+      margin-bottom:1rem; display:flex; align-items:baseline; gap:0.5rem;
+    }
+    .cr-counter-num { font-size:2.6rem; color:#FFD060; line-height:1; }
+    .cr-counter-sep { font-size:1rem; color:rgba(255,255,255,0.25); }
+    .cr-counter-tot { font-size:1rem; }
+    .cr-name {
+      position:relative; z-index:10;
+      font-family:'Orbitron',monospace; font-weight:900;
+      font-size:clamp(1.9rem,5.5vw,2.9rem); letter-spacing:0.25em; text-transform:uppercase;
+      margin-bottom:0.4rem;
+      background:linear-gradient(120deg,#FFD060 0%,#C084FC 55%,#FFD060 100%);
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+      filter: drop-shadow(0 0 18px rgba(255,208,96,0.35));
+    }
+    .cr-role {
+      position:relative; z-index:10;
+      font-family:'Share Tech Mono',monospace; font-size:1rem;
+      letter-spacing:0.28em; text-transform:uppercase;
+      color:rgba(192,132,252,0.7); margin-bottom:1.2rem;
+    }
+
+    /* ── Card slot: fixed height + absolute stacking ── */
+    .cr-card-slot {
+      position:relative; z-index:10;
+      width:min(340px,86vw);
+      height:480px;            /* fixed — both cards overlap here during transition */
+    }
+    /* Cards inside slot are absolutely positioned so they stack on top of each other */
+    .cr-card-slot .tc {
+      position:absolute !important;
+      inset:0; min-height:unset !important; height:100%;
+    }
+    .cr-card-slot .tc-inner { min-height:unset !important; height:100%; }
+    /* Card RISES through a portal from below — clip-path bottom-to-top reveal */
+    @keyframes crCardIn {
+      0%   { clip-path:inset(100% 6% 0% 6% round 12px); transform:translateY(28px) scale(0.93); filter:brightness(3) blur(3px); opacity:1; }
+      20%  { filter:brightness(1.6) blur(1px); }
+      54%  { clip-path:inset(0% 0% 0% 0% round 12px); transform:translateY(-10px) scale(1.05); filter:brightness(1.1) blur(0); }
+      72%  { transform:translateY(5px) scale(0.98); filter:brightness(1); }
+      85%  { transform:translateY(-2px) scale(1.01); }
+      100% { transform:none; filter:none; clip-path:none; opacity:1; }
+    }
+    /* Card exit — sucked upward into the portal above */
+    @keyframes crCardOut {
+      0%   { clip-path:none; transform:none; filter:none; opacity:1; }
+      22%  { transform:scale(1.05) translateY(-8px); clip-path:inset(0% 0% 0% 0% round 12px); }
+      100% { clip-path:inset(0% 0% 100% 0% round 12px); transform:translateY(-32px) scale(0.87); filter:brightness(2.5) blur(3px); opacity:0; }
+    }
+    /* Gentle organic sway while card is displayed */
+    @keyframes crFloat {
+      0%,100% { transform:rotate(-0.4deg) translateY(0px); }
+      38%     { transform:rotate(0.55deg) translateY(-9px); }
+      68%     { transform:rotate(-0.25deg) translateY(-4px); }
+    }
+    /* Portal rings that expand outward on card arrival */
+    @keyframes crPortalExpand {
+      0%   { transform:scale(0.88); opacity:0.95; }
+      100% { transform:scale(1.6);  opacity:0; }
+    }
+    .cr-portal-ring {
+      position:absolute; inset:-16px; border-radius:16px;
+      border:2px solid rgba(255,208,96,0.88);
+      pointer-events:none; z-index:15;
+      animation:crPortalExpand 0.7s ease-out forwards;
+    }
+    .cr-portal-ring.b {
+      border-color:rgba(192,132,252,0.72);
+      animation-delay:0.2s;
+    }
+    .cr-card-in  { z-index:2; animation:crCardIn  0.88s cubic-bezier(0.22,1.05,0.36,1) both; }
+    .cr-card-out { z-index:1; animation:crCardOut 0.48s cubic-bezier(0.4,0,1,1) both; }
+
+    /* Corner targeting brackets — draw in from each corner */
+    .cr-bracket {
+      position:absolute; width:28px; height:28px;
+      border-color:rgba(255,208,96,0.7); border-style:solid;
+      pointer-events:none; z-index:20;
+      opacity:0;
+    }
+    .cr-bracket-tl { top:-8px;    left:-8px;    border-width:2px 0 0 2px; transform-origin:top left; }
+    .cr-bracket-tr { top:-8px;    right:-8px;   border-width:2px 2px 0 0; transform-origin:top right; }
+    .cr-bracket-bl { bottom:-8px; left:-8px;    border-width:0 0 2px 2px; transform-origin:bottom left; }
+    .cr-bracket-br { bottom:-8px; right:-8px;   border-width:0 2px 2px 0; transform-origin:bottom right; }
+    @keyframes bracketDraw {
+      0%   { opacity:0; transform:scale(0); }
+      65%  { opacity:1; transform:scale(1.12); }
+      100% { opacity:0.7; transform:scale(1); }
+    }
+    @keyframes bracketPulse {
+      0%,100% { opacity:0.55; }
+      50%     { opacity:0.95; filter:drop-shadow(0 0 4px rgba(255,208,96,0.8)); }
+    }
+
+    /* Subtle scan line (data-read aesthetic, not flashy) */
+    @keyframes crScan {
+      0%   { top:-40%; opacity:0.6; }
+      100% { top:130%; opacity:0; }
+    }
+    .cr-scan-sweep {
+      position:absolute; left:0; right:0; height:30%;
+      pointer-events:none; z-index:50; border-radius:12px;
+      background:linear-gradient(180deg,
+        transparent 0%,
+        rgba(255,208,96,0.05) 45%,
+        rgba(255,208,96,0.1)  50%,
+        rgba(255,208,96,0.05) 55%,
+        transparent 100%);
+      animation:crScan 1.1s 0.2s ease-out forwards;
+    }
+
+    /* Floating embers */
+    @keyframes crEmber {
+      0%   { opacity:0.8; transform:translate(0,0) scale(1); }
+      100% { opacity:0;   transform:translate(var(--ex),var(--ey)) scale(0.1); }
+    }
+    .cr-ember {
+      position:fixed; border-radius:50%;
+      pointer-events:none; z-index:5999;
+      animation:crEmber linear forwards;
+    }
+
+    /* Blinking cursor for typewriter */
+    @keyframes crBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .cr-cursor {
+      display:inline-block; width:2px; height:0.85em;
+      background:#FFD060; margin-left:3px; vertical-align:middle;
+      animation:crBlink 0.75s step-end infinite;
+    }
+
+    .cr-btns {
+      position:relative; z-index:10;
+      display:flex; gap:1.2rem; margin-top:1.8rem; align-items:center;
+    }
+    #cr-next {
+      font-family:'Share Tech Mono',monospace; font-size:1rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      padding:1.1rem 2.8rem; border-radius:8px; cursor:pointer; border:none;
+      background:linear-gradient(135deg,#FFD060,#E0A500);
+      color:#1a0a00; font-weight:700;
+      box-shadow:0 0 40px rgba(255,208,96,0.5),0 6px 24px rgba(0,0,0,0.6);
+      transition:transform 0.18s,box-shadow 0.18s;
+      position:relative; overflow:hidden;
+    }
+    #cr-next::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,0.3) 50%,transparent 70%);
+      transform:translateX(-200%); transition:transform 0.6s;
+    }
+    #cr-next:hover { transform:scale(1.07); box-shadow:0 0 70px rgba(255,208,96,0.85),0 6px 24px rgba(0,0,0,0.6); }
+    #cr-next:hover::before { transform:translateX(200%); }
+    #cr-next:active { transform:scale(0.95); }
+    #cr-skip-all {
+      font-family:'Share Tech Mono',monospace; font-size:0.78rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      padding:0.85rem 1.6rem; border-radius:6px; cursor:pointer;
+      background:transparent; border:1px solid rgba(192,132,252,0.4);
+      color:rgba(192,132,252,0.6); transition:all 0.25s;
+    }
+    #cr-skip-all:hover { border-color:var(--gold); color:var(--gold); }
+    .cr-flip-hint {
+      position:relative; z-index:10;
+      font-family:'Share Tech Mono',monospace; font-size:0.72rem;
+      letter-spacing:0.28em; text-transform:uppercase;
+      color:rgba(192,132,252,0.45); margin-top:0.75rem;
+    }
+    @keyframes crCardIn {
+      0%   { opacity:0; transform:translateY(60px) scale(0.86) rotateY(-10deg); filter:brightness(4) blur(3px); }
+      28%  { opacity:1; filter:brightness(2) blur(0); }
+      55%  { transform:translateY(-8px) scale(1.035) rotateY(0.8deg); filter:brightness(1.15); }
+      75%  { transform:translateY(3px) scale(0.993); filter:brightness(1); }
+      88%  { transform:translateY(-1.5px) scale(1.003); }
+      100% { opacity:1; transform:none; filter:brightness(1); }
+    }
+    @keyframes crCardOut {
+      0%   { opacity:1; transform:none; }
+      35%  { opacity:0.5; transform:translateX(-35px) rotate(-5deg) scale(0.91); }
+      100% { opacity:0; transform:translateX(-110px) rotate(-12deg) scale(0.78); }
+    }
+    @keyframes crGlow {
+      0%,100% { box-shadow:0 0 40px rgba(255,208,96,0.32),0 30px 80px rgba(0,0,0,0.95); }
+      50%     { box-shadow:0 0 120px rgba(255,208,96,0.8),0 0 220px rgba(192,132,252,0.45),0 30px 80px rgba(0,0,0,0.95); }
+    }
+    .cr-card-glow { animation:crGlow 2.2s ease-in-out infinite; border-radius:12px; }
+    @keyframes crShockwave {
+      0%   { transform:translate(-50%,-50%) scale(0.15); opacity:1; }
+      100% { transform:translate(-50%,-50%) scale(5);    opacity:0; }
+    }
+    .cr-shockwave {
+      position:fixed; z-index:5999; pointer-events:none;
+      width:320px; height:500px; border-radius:20px;
+      border:3px solid rgba(255,208,96,0.9);
+      filter:drop-shadow(0 0 12px rgba(255,208,96,0.6));
+      top:50%; left:50%;
+      animation:crShockwave 0.95s cubic-bezier(0.1,0,0.8,1) forwards;
+    }
+    .cr-shockwave:nth-child(2) { animation-delay:0.12s; border-color:rgba(192,132,252,0.7); }
+    @keyframes crParticle {
+      0%   { opacity:1; transform:translate(0,0) scale(1); }
+      100% { opacity:0; transform:translate(var(--px),var(--py)) scale(0.1); }
+    }
+    .cr-particle {
+      position:fixed; border-radius:50%;
+      pointer-events:none; z-index:7000;
+      animation:crParticle 0.9s ease-out forwards;
+    }
+    @keyframes crNameIn {
+      0%   { opacity:0; transform:translateY(18px); letter-spacing:0.55em; }
+      100% { opacity:1; transform:none; letter-spacing:0.25em; }
+    }
+    .cr-name-anim { animation:crNameIn 0.65s 0.32s cubic-bezier(0.34,1.3,0.64,1) both; }
+    @keyframes crRoleIn {
+      0%   { opacity:0; transform:translateY(10px); }
+      100% { opacity:1; transform:none; }
+    }
+    .cr-role-anim { animation:crRoleIn 0.5s 0.5s ease both; }
+    @keyframes crCounterPop {
+      0%   { transform:scale(1.8); opacity:0; }
+      100% { transform:scale(1); opacity:1; }
+    }
+    .cr-counter-pop { animation:crCounterPop 0.45s cubic-bezier(0.34,1.3,0.64,1) both; }
 
     /* ─── SPONSORS ─── */
     #sponsors { background: var(--bg); }
@@ -564,8 +1213,8 @@
     }
     .footer-logo em { color: var(--gold); font-style: normal; }
     .footer-school {
-      color: var(--muted); font-size: 0.78rem;
-      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--muted); font-size: 0.9rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
     }
     .footer-hr {
       height: 1px;
@@ -573,7 +1222,7 @@
       max-width: 320px; margin: 2rem auto;
     }
     .footer-copy {
-      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em;
+      color: var(--muted); font-size: 0.84rem; letter-spacing: 0.1em;
     }
 
     /* ─── REVEAL ─── */
@@ -627,10 +1276,10 @@
 
     .games-col-label {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--purple);
-      letter-spacing: 0.38em; text-transform: uppercase;
+      font-size: 0.8rem; color: #C084FC;
+      letter-spacing: 0.35em; text-transform: uppercase;
       margin-bottom: 1rem; display: block;
-      text-shadow: 0 0 14px rgba(192,132,252,0.6);
+      text-shadow: 0 0 16px rgba(192,132,252,0.8);
     }
 
     .games-grid { display: grid; gap: 0.55rem; }
@@ -652,14 +1301,14 @@
 
     .game-status {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.58rem; letter-spacing: 0.14em;
+      font-size: 0.72rem; letter-spacing: 0.14em;
       padding: 0.15rem 0.5rem; border-radius: 2px;
       text-transform: uppercase; white-space: nowrap;
     }
     .game-tile.active .game-status { color: var(--gold);   border: 1px solid rgba(255,208,96,0.45); }
     .game-tile.soon  .game-status { color: var(--muted); border: 1px solid var(--border); }
 
-    .game-name { font-size: 0.92rem; font-weight: 600; letter-spacing: 0.03em; }
+    .game-name { font-size: 1rem; font-weight: 600; letter-spacing: 0.03em; }
     .game-tile.active .game-name { color: var(--text); }
     .game-tile.soon  .game-name  { color: var(--muted); }
 
@@ -696,7 +1345,7 @@
 
     .achievement-season {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.58rem; color: var(--muted);
+      font-size: 0.72rem; color: var(--muted);
       letter-spacing: 0.18em; margin-bottom: 0.4rem;
     }
     .achievement-num {
@@ -711,7 +1360,7 @@
     }
     .achievement-label {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem; color: var(--muted);
+      font-size: 0.84rem; color: var(--muted);
       letter-spacing: 0.14em; text-transform: uppercase;
       line-height: 1.6;
     }
@@ -732,10 +1381,10 @@
     }
     .nationals-badge {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--purple);
-      letter-spacing: 0.45em; text-transform: uppercase;
+      font-size: 0.8rem; color: #C084FC;
+      letter-spacing: 0.4em; text-transform: uppercase;
       margin-bottom: 0.5rem;
-      text-shadow: 0 0 15px rgba(192,132,252,0.7);
+      text-shadow: 0 0 16px rgba(192,132,252,0.9);
     }
     .nationals-title {
       font-family: 'Orbitron', monospace;
@@ -749,7 +1398,7 @@
     }
     .nationals-sub {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.78rem; color: var(--muted);
+      font-size: 0.92rem; color: var(--muted);
       letter-spacing: 0.2em;
     }
     @keyframes shimmer {
@@ -760,75 +1409,13 @@
     /* coaching staff */
     .staff-divider {
       display: flex; align-items: center; gap: 1rem;
-      max-width: 1000px; margin: 3rem auto 2rem;
+      max-width: 1050px; margin: 3rem auto 2rem;
     }
-    .staff-divider-line {
-      flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, var(--border));
-    }
-    .staff-divider-line.r {
-      background: linear-gradient(to left, transparent, var(--border));
-    }
+    .staff-divider-line { flex:1; height:1px; background:linear-gradient(to right,transparent,var(--border)); }
+    .staff-divider-line.r { background:linear-gradient(to left,transparent,var(--border)); }
     .staff-divider-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.66rem; color: var(--muted);
-      letter-spacing: 0.3em; text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .coaches-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 1.2rem; max-width: 480px; margin: 0 auto;
-    }
-
-    .coach-card {
-      position: relative; padding: 2rem 1rem;
-      background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(7,1,14,0.7));
-      border: 1px solid var(--border);
-      border-radius: 10px; text-align: center;
-      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-      overflow: hidden;
-    }
-    .coach-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--purple), transparent);
-      transform: scaleX(0); transform-origin: left;
-      transition: transform 0.4s ease;
-    }
-    .coach-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(192,132,252,0.38);
-      box-shadow: 0 14px 42px rgba(192,132,252,0.14);
-    }
-    .coach-card:hover::before { transform: scaleX(1); }
-
-    .coach-avatar {
-      width: 64px; height: 64px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Orbitron', monospace;
-      font-size: 1.4rem; font-weight: 700;
-      margin: 0 auto 1rem; position: relative;
-    }
-    .ca-1 { background: linear-gradient(135deg, #7C3AED, #C084FC); }
-    .ca-2 { background: linear-gradient(135deg, #C084FC, #FFD060); }
-    .coach-avatar-ring {
-      position: absolute; inset: -3px; border-radius: 50%;
-      border: 1px solid rgba(192,132,252,0.5);
-    }
-    .coach-name {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.72rem; font-weight: 700;
-      letter-spacing: 0.04em; margin-bottom: 0.3rem;
-    }
-    .coach-role {
-      font-size: 0.72rem; color: var(--purple);
-      letter-spacing: 0.12em; text-transform: uppercase;
-      margin-bottom: 0.2rem;
-    }
-    .coach-org {
-      font-size: 0.62rem; color: var(--muted);
-      letter-spacing: 0.1em; text-transform: uppercase;
+      font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--muted);
+      letter-spacing:.3em; text-transform:uppercase; white-space:nowrap;
     }
 
     /* ─── MISSION / VISION ─── */
@@ -842,8 +1429,8 @@
     .mv-col-label {
       display: block;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 0.68rem; color: var(--purple);
-      letter-spacing: 0.38em; text-transform: uppercase;
+      font-size: 0.8rem; color: #C084FC;
+      letter-spacing: 0.35em; text-transform: uppercase;
       margin-bottom: 1.2rem;
     }
 
@@ -951,9 +1538,9 @@
     .form-group:last-of-type { margin-bottom: 0; }
 
     .form-group label {
-      font-family: 'Share Tech Mono', monospace; font-size: 0.66rem;
-      color: var(--purple); letter-spacing: 0.25em; text-transform: uppercase;
-      text-shadow: 0 0 12px rgba(192,132,252,0.5);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+      color: #C084FC; letter-spacing: 0.22em; text-transform: uppercase;
+      text-shadow: 0 0 14px rgba(192,132,252,0.7);
     }
     .form-group input,
     .form-group textarea,
@@ -1006,12 +1593,8 @@
     .reveal.visible .section-rule::before,
     .reveal.visible .section-rule::after { width: 60px; }
 
-    /* ─── 3D CARD TILT SETUP ─── */
-    .team-grid { perspective: 900px; }
-    .player-card {
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
+    /* ─── 3D CARD PERSPECTIVE ─── */
+    .team-grid, .coaches-grid { perspective: 1200px; }
 
     /* ─── HERO SPARKLES ─── */
     .hero-spark {
@@ -1049,7 +1632,7 @@
     .about-text p, .story-text p { font-size: 1.08rem; }
 
     /* ─── CARD GLASS BACKDROP ─── */
-    .player-card, .sponsor-card, .achievement, .coach-card {
+    .tc-front, .tc-back, .sponsor-card, .achievement {
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -1364,13 +1947,14 @@
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .mv-grid    { grid-template-columns: 1fr; gap: 2rem; }
       .team-grid  { grid-template-columns: repeat(3, 1fr); }
+      .coaches-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 640px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links  { display: none; }
       .hamburger  { display: flex; }
       .achievements { grid-template-columns: 1fr; }
-      .team-grid  { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .team-grid, .coaches-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
       .sponsors-grid { grid-template-columns: 1fr; }
       section { padding: 5rem 1.5rem; }
       .tab { font-size: 0.65rem; padding: 0.45rem 0.85rem; }
@@ -1515,6 +2099,7 @@
 <div id="progress-bar"></div>
 <canvas id="bgCanvas"></canvas>
 <div id="grain" aria-hidden="true"></div>
+<div id="pack-flash" aria-hidden="true"></div>
 <div id="cursor-lens" aria-hidden="true"></div>
 <div id="crosshair" aria-hidden="true"><div class="ch-h"></div><div class="ch-v"></div><div class="ch-ring"></div></div>
 <div id="live-clock" aria-hidden="true"></div>
@@ -1714,85 +2299,297 @@
         <div class="section-rule"><div class="rule-diamond"></div></div>
       </div>
 
-      <div class="team-grid">
 
-        <div class="player-card reveal" style="transition-delay:.05s">
-          <div class="player-number-badge">01</div>
-          <div class="player-avatar av-1">
-            V
-            <div class="player-avatar-ring"></div>
+      <!-- ── PACK STAGE ── -->
+      <div id="pack-stage">
+        <div id="pack-outer">
+          <!-- TOP HALF -->
+          <div class="pack-half pack-half-t">
+            <div class="pack-inner">
+              <div class="pack-holo-t"></div>
+              <div class="pack-holo-b"></div>
+              <div class="pack-shine"></div>
+              <img src="images/sentinel-logo.png" class="pack-logo"
+                   alt="Sentinel Esports"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="pack-logo-fallback" style="display:none">S</div>
+              <div class="pack-name">SENTINEL ESPORTS</div>
+              <div class="pack-sub">2025 – 2026 SEASON ROSTER</div>
+              <div class="pack-badge">✦ 7 CARDS INSIDE ✦</div>
+            </div>
           </div>
-          <div class="player-name">V1LE</div>
-          <div class="player-game">Valorant</div>
+          <!-- BOTTOM HALF -->
+          <div class="pack-half pack-half-b">
+            <div class="pack-inner">
+              <div class="pack-holo-t"></div>
+              <div class="pack-holo-b"></div>
+              <div class="pack-shine"></div>
+              <img src="images/sentinel-logo.png" class="pack-logo"
+                   alt="Sentinel Esports"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="pack-logo-fallback" style="display:none">S</div>
+              <div class="pack-name">SENTINEL ESPORTS</div>
+              <div class="pack-sub">2025 – 2026 SEASON ROSTER</div>
+              <div class="pack-badge">✦ 7 CARDS INSIDE ✦</div>
+            </div>
+          </div>
+          <div class="pack-tear-line"></div>
+          <div class="pack-crack pack-crack-1"></div>
+          <div class="pack-crack pack-crack-2"></div>
+          <div class="pack-crack pack-crack-3"></div>
+          <!-- Smash-progress ring (fills in 3 steps) -->
+          <svg class="pack-ring-svg" viewBox="0 0 302 452" fill="none" aria-hidden="true">
+            <rect id="packRing" x="8" y="8" width="286" height="436" rx="18" ry="18"
+              stroke-dasharray="1444" stroke-dashoffset="1444"/>
+          </svg>
+          <div class="pack-hint" id="packHint">▮  SMASH TO OPEN  ▮</div>
+        </div>
+        <button class="pack-skip-btn" id="packSkipBtn">SKIP · SHOW ROSTER</button>
+      </div>
+
+      <div class="team-grid" id="teamGrid" style="display:none">
+
+        <!-- 01 · V1LE -->
+        <div class="tc reveal" style="transition-delay:.05s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#01</div>
+              <div class="tc-rarity sent">Sentinel</div>
+              <div class="tc-av av-v">V<div class="tc-av-ring"></div></div>
+              <div class="tc-name">V1LE</div>
+              <div class="tc-ign">IGN · V1LE</div>
+              <div class="tc-tags">
+                <span class="tc-tag gold">Senior</span>
+                <span class="tc-tag">Sentinel</span>
+                <span class="tc-tag">Initiator</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">V1LE</span><span class="tc-bh-num">#01</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">SR</div><div class="tc-sk">Year</div></div>
+                <div class="tc-stat"><div class="tc-sv">S/I</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">'26</div><div class="tc-sk">Season</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
+          </div>
         </div>
 
-        <div class="player-card reveal" style="transition-delay:.12s">
-          <div class="player-number-badge">02</div>
-          <div class="player-avatar av-2">
-            F
-            <div class="player-avatar-ring"></div>
+        <!-- 02 · FlimseyDoor -->
+        <div class="tc reveal" style="transition-delay:.12s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#02</div>
+              <div class="tc-rarity capt">Captain</div>
+              <div class="tc-av av-f">F<div class="tc-av-ring"></div></div>
+              <div class="tc-name">FlimseyDoor</div>
+              <div class="tc-ign">IGN · FlimseyDoor</div>
+              <div class="tc-tags">
+                <span class="tc-tag gold">Captain</span>
+                <span class="tc-tag gold">Senior</span>
+                <span class="tc-tag">Controller</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">FlimseyDoor</span><span class="tc-bh-num">#02</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">SR</div><div class="tc-sk">Year</div></div>
+                <div class="tc-stat"><div class="tc-sv">CTRL</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">CPT</div><div class="tc-sk">Status</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="player-name">FlimseyDoor</div>
-          <div class="player-game">Valorant</div>
         </div>
 
-        <div class="player-card reveal" style="transition-delay:.19s">
-          <div class="player-number-badge">03</div>
-          <div class="player-avatar av-3">
-            N
-            <div class="player-avatar-ring"></div>
+        <!-- 03 · Nimbus -->
+        <div class="tc reveal" style="transition-delay:.19s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#03</div>
+              <div class="tc-rarity duel">Duelist</div>
+              <div class="tc-av av-n">N<div class="tc-av-ring"></div></div>
+              <div class="tc-name">Nimbus</div>
+              <div class="tc-ign">IGN · Nimbus</div>
+              <div class="tc-tags">
+                <span class="tc-tag red">IGL</span>
+                <span class="tc-tag">Junior</span>
+                <span class="tc-tag red">Duelist</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">Nimbus</span><span class="tc-bh-num">#03</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">JR</div><div class="tc-sk">Year</div></div>
+                <div class="tc-stat"><div class="tc-sv">DUEL</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">IGL</div><div class="tc-sk">Status</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="player-name">Nimbus</div>
-          <div class="player-game">Valorant</div>
         </div>
 
-        <div class="player-card reveal" style="transition-delay:.26s">
-          <div class="player-number-badge">04</div>
-          <div class="player-avatar av-4">
-            T
-            <div class="player-avatar-ring"></div>
+        <!-- 04 · toast -->
+        <div class="tc reveal" style="transition-delay:.26s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#04</div>
+              <div class="tc-rarity sent">Sentinel</div>
+              <div class="tc-av av-t">T<div class="tc-av-ring"></div></div>
+              <div class="tc-name">toast</div>
+              <div class="tc-ign">IGN · toast</div>
+              <div class="tc-tags">
+                <span class="tc-tag green">Freshman</span>
+                <span class="tc-tag">Sentinel</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">toast</span><span class="tc-bh-num">#04</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">FR</div><div class="tc-sk">Year</div></div>
+                <div class="tc-stat"><div class="tc-sv">SENT</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">'26</div><div class="tc-sk">Season</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="player-name">toast</div>
-          <div class="player-game">Valorant</div>
         </div>
 
-        <div class="player-card reveal" style="transition-delay:.33s">
-          <div class="player-number-badge">05</div>
-          <div class="player-avatar av-5">
-            R
-            <div class="player-avatar-ring"></div>
+        <!-- 05 · RamnNoodles09 -->
+        <div class="tc reveal" style="transition-delay:.33s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#05</div>
+              <div class="tc-rarity init">Initiator</div>
+              <div class="tc-av av-r">R<div class="tc-av-ring"></div></div>
+              <div class="tc-name">RamnNoodles09</div>
+              <div class="tc-ign">IGN · RamnNoodles09</div>
+              <div class="tc-tags">
+                <span class="tc-tag">Junior</span>
+                <span class="tc-tag blue">Initiator</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">RamnNoodles09</span><span class="tc-bh-num">#05</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">JR</div><div class="tc-sk">Year</div></div>
+                <div class="tc-stat"><div class="tc-sv">INIT</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">'26</div><div class="tc-sk">Season</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="player-name">RamnNoodles09</div>
-          <div class="player-game">Valorant</div>
         </div>
 
       </div>
 
       <!-- Coaching Staff -->
-      <div class="staff-divider reveal">
+      <div class="staff-divider" id="staffDivider" style="display:none">
         <div class="staff-divider-line"></div>
-        <div class="staff-divider-label">Coaching Staff</div>
+        <div class="staff-divider-label">// Coaching Staff //</div>
         <div class="staff-divider-line r"></div>
       </div>
 
-      <div class="coaches-grid">
-        <div class="coach-card reveal" style="transition-delay:.05s">
-          <div class="coach-avatar ca-1">
-            A
-            <div class="coach-avatar-ring"></div>
+      <div class="coaches-grid" id="coachGrid" style="display:none">
+
+        <!-- 06 · gigaberry / Aaron Santa Cruz -->
+        <div class="tc reveal" style="transition-delay:.05s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#06</div>
+              <div class="tc-rarity staff">Coach</div>
+              <div class="tc-av av-a">A<div class="tc-av-ring"></div></div>
+              <div class="tc-name">Aaron Santa Cruz</div>
+              <div class="tc-ign">IGN · gigaberry</div>
+              <div class="tc-tags">
+                <span class="tc-tag green">Coach</span>
+                <span class="tc-tag green">Collegiate</span>
+                <span class="tc-tag">Valorant</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">Aaron Santa Cruz</span><span class="tc-bh-num">#06</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">VLR</div><div class="tc-sk">Game</div></div>
+                <div class="tc-stat"><div class="tc-sv">CLG</div><div class="tc-sk">Level</div></div>
+                <div class="tc-stat"><div class="tc-sv">ACT</div><div class="tc-sk">Status</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">In-Game Name</span><span class="tc-fv">gigaberry</span></div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="coach-name">Aaron Santa Cruz</div>
-          <div class="coach-role">Valorant Coach</div>
         </div>
-        <div class="coach-card reveal" style="transition-delay:.12s">
-          <div class="coach-avatar ca-2">
-            T
-            <div class="coach-avatar-ring"></div>
+
+        <!-- 07 · toadstul / Travis Benson -->
+        <div class="tc reveal" style="transition-delay:.12s">
+          <div class="tc-inner">
+            <div class="tc-front">
+              <div class="tc-holo"></div>
+              <div class="tc-num">#07</div>
+              <div class="tc-rarity staff">Head Coach</div>
+              <div class="tc-av av-tr">T<div class="tc-av-ring"></div></div>
+              <div class="tc-name">Travis Benson</div>
+              <div class="tc-ign">IGN · toadstul</div>
+              <div class="tc-tags">
+                <span class="tc-tag green">Head Coach</span>
+                <span class="tc-tag">MCPS Staff</span>
+              </div>
+              <div class="tc-flip-hint">[ TAP TO FLIP ]</div>
+            </div>
+            <div class="tc-back">
+              <div class="tc-back-holo"></div>
+              <div class="tc-bh"><span class="tc-bh-name">Travis Benson</span><span class="tc-bh-num">#07</span></div>
+              <div class="tc-stats">
+                <div class="tc-stat"><div class="tc-sv">HC</div><div class="tc-sk">Role</div></div>
+                <div class="tc-stat"><div class="tc-sv">MCPS</div><div class="tc-sk">Org</div></div>
+                <div class="tc-stat"><div class="tc-sv">ACT</div><div class="tc-sk">Status</div></div>
+              </div>
+              <div class="tc-f"><span class="tc-fl">In-Game Name</span><span class="tc-fv">toadstul</span></div>
+              <div class="tc-f"><span class="tc-fl">Hobbies</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-f"><span class="tc-fl">Fun Fact</span><span class="tc-fv">TBD</span></div>
+              <div class="tc-quote">TBD</div>
+              <div class="tc-back-hint">[ TAP TO FLIP BACK ]</div>
+            </div>
           </div>
-          <div class="coach-name">Travis Benson</div>
-          <div class="coach-role">Head Coach</div>
-          <div class="coach-org">MCPS Staff</div>
         </div>
+
       </div>
 
     </div>
@@ -2019,6 +2816,7 @@
     <div class="footer-school">Sentinel High School &nbsp;·&nbsp; Missoula, MT &nbsp;·&nbsp; Esports</div>
     <div class="footer-hr"></div>
     <div class="footer-copy">© 2025–2026 Sentinel Esports &nbsp;·&nbsp; All rights reserved</div>
+    <button id="replayIntroBtn" onclick="localStorage.removeItem('shse_introSeen');location.reload();" style="margin-top:1.4rem;background:none;border:none;font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:rgba(192,132,252,0.4);letter-spacing:0.22em;text-transform:uppercase;cursor:pointer;transition:color 0.2s;" onmouseover="this.style.color='rgba(192,132,252,0.85)'" onmouseout="this.style.color='rgba(192,132,252,0.4)'">↺ &nbsp;REPLAY INTRO</button>
   </footer>
 
 </div><!-- /content -->
@@ -2206,23 +3004,459 @@ document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
   }, 3600);
 })();
 
-/* ── 3D CARD TILT ── */
+/* ── TRADING CARDS: FLIP + PACK OPEN ── */
 (function() {
-  document.querySelectorAll('.player-card').forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      card.style.transition = 'transform 0.08s ease, border-color 0.35s, box-shadow 0.35s';
+
+  /* ── FLIP + TILT (attached to grid cards and overlay clones) ── */
+  function wireFlip(card) {
+    const inner = card.querySelector('.tc-inner');
+    if (!inner || card._tcInited) return;
+    card._tcInited = true;
+    card.addEventListener('click', () => {
+      inner.style.transition = '';
+      inner.style.transform  = '';
+      void inner.offsetWidth;
+      inner.style.transition = 'transform 0.65s cubic-bezier(0.4,0,0.2,1)';
+      inner.classList.toggle('flipped');
     });
     card.addEventListener('mousemove', e => {
-      const r   = card.getBoundingClientRect();
-      const x   = (e.clientX - r.left) / r.width  - 0.5;
-      const y   = (e.clientY - r.top)  / r.height - 0.5;
-      card.style.transform = `translateY(-8px) rotateY(${x * 18}deg) rotateX(${-y * 18}deg) scale(1.02)`;
+      if (inner.classList.contains('flipped')) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      inner.style.transition = 'transform 0.06s ease';
+      inner.style.transform  = `rotateY(${x*14}deg) rotateX(${-y*10}deg) translateZ(8px)`;
     });
     card.addEventListener('mouseleave', () => {
-      card.style.transition = 'transform 0.5s ease, border-color 0.35s, box-shadow 0.35s';
-      card.style.transform = '';
+      if (inner.classList.contains('flipped')) return;
+      inner.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1)';
+      inner.style.transform  = '';
     });
-  });
+  }
+  function initCards() { document.querySelectorAll('.tc').forEach(wireFlip); }
+
+  /* ── PACK ELEMENTS (always present in DOM when script runs) ── */
+  const packOuter    = document.getElementById('pack-outer');
+  const packStage    = document.getElementById('pack-stage');
+  const teamGrid     = document.getElementById('teamGrid');
+  const staffDiv     = document.getElementById('staffDivider');
+  const coachGrid    = document.getElementById('coachGrid');
+  const flash        = document.getElementById('pack-flash');
+  const packHint     = document.getElementById('packHint');
+  const progressRing = document.getElementById('packRing');
+  const halfT        = packOuter && packOuter.querySelector('.pack-half-t');
+  const halfB        = packOuter && packOuter.querySelector('.pack-half-b');
+  const tearLine     = packOuter && packOuter.querySelector('.pack-tear-line');
+
+  if (!packOuter) { initCards(); return; }
+
+  /* Orbiting sparkles */
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('div');
+    s.className = 'pack-spark';
+    const ang = (i / 12) * Math.PI * 2;
+    const rad = 100 + Math.random() * 65;
+    s.style.cssText = `left:${50+Math.cos(ang)*48}%;top:${50+Math.sin(ang)*54}%;`
+      + `--dx:${(Math.cos(ang)*rad).toFixed(0)}px;--dy:${(Math.sin(ang)*rad).toFixed(0)}px;`
+      + `animation-duration:${2+Math.random()*2.8}s;animation-delay:${(Math.random()*2.8).toFixed(2)}s;`;
+    packOuter.appendChild(s);
+  }
+
+  /* ════════════════════════════════════════
+     SMASH-TO-OPEN mechanic
+     Click the pack 3 times. Each hit squash-and-stretches the pack,
+     fills 1/3 of the ring, and adds visible crack lines.
+     Third hit triggers the tear sequence.
+  ════════════════════════════════════════ */
+  const RING_DASH  = 1444;
+  const PUMP_LIMIT = 3;
+  let pumpCount = 0, tearing = false;
+
+  const hintStages = [
+    '▮  SMASH TO OPEN  ▮',
+    '▮▮  AGAIN!',
+    '▮▮▮  ONE MORE!'
+  ];
+
+  function doPump() {
+    if (tearing || packOuter.classList.contains('opening')) return;
+    pumpCount++;
+
+    /* Fill ring segment with a snappy spring transition */
+    if (progressRing) {
+      progressRing.style.transition = 'stroke-dashoffset 0.38s cubic-bezier(0.34,1.5,0.64,1)';
+      progressRing.style.strokeDashoffset = RING_DASH * (1 - pumpCount / PUMP_LIMIT);
+    }
+
+    /* Squash-and-stretch punch */
+    packOuter.classList.remove('pump');
+    void packOuter.offsetWidth;
+    packOuter.classList.add('pump');
+    setTimeout(() => packOuter.classList.remove('pump'), 420);
+
+    /* Escalate state */
+    packOuter.classList.remove('state-1', 'state-2');
+    if (pumpCount === 1) {
+      packOuter.classList.add('state-1');
+      if (packHint) packHint.textContent = hintStages[1];
+    } else if (pumpCount === 2) {
+      packOuter.classList.add('state-2');
+      if (packHint) packHint.textContent = hintStages[2];
+    }
+
+    /* Small particle burst at the tear line on each hit */
+    const r = packOuter.getBoundingClientRect();
+    burstParticles(r.left + r.width / 2, r.top + r.height / 2, 12);
+
+    /* Third hit → tear */
+    if (pumpCount >= PUMP_LIMIT) {
+      packOuter.style.pointerEvents = 'none';
+      setTimeout(runTear, 100);
+    }
+  }
+
+  packOuter.addEventListener('click', doPump);
+
+  /* Skip button — bypasses pack entirely and fades roster in */
+  const packSkipBtn = document.getElementById('packSkipBtn');
+  if (packSkipBtn) {
+    packSkipBtn.addEventListener('click', e => {
+      e.stopPropagation(); /* don't trigger packOuter's click handler */
+      if (tearing) return;
+      tearing = true; /* prevent pack from being clicked afterwards */
+      packStage.style.transition = 'opacity 0.35s ease';
+      packStage.style.opacity = '0';
+      setTimeout(() => {
+        packStage.style.display = 'none';
+        [teamGrid, staffDiv, coachGrid].forEach(el => { if (el) el.style.display = ''; });
+        dealGrid();
+      }, 380);
+    });
+  }
+
+  /* ════════════════════════════════════════
+     TEAR SEQUENCE
+  ════════════════════════════════════════ */
+  function spawnShockwave() {
+    ['rgba(255,208,96,0.9)', 'rgba(192,132,252,0.7)', 'rgba(255,255,255,0.5)'].forEach((c, i) => {
+      setTimeout(() => {
+        const sw = document.createElement('div');
+        sw.className = 'cr-shockwave';
+        sw.style.borderColor = c;
+        document.body.appendChild(sw);
+        setTimeout(() => sw.remove(), 1100);
+      }, i * 85);
+    });
+  }
+
+  function burstParticles(cx, cy, count) {
+    const colors = ['#FFD060','#C084FC','#ffffff','#FFD060','#E0A500','#A855F7'];
+    for (let i = 0; i < count; i++) {
+      const p    = document.createElement('div');
+      p.className = 'cr-particle';
+      const ang  = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.65;
+      const dist = 65 + Math.random() * 195;
+      const size = 3 + Math.random() * 8;
+      p.style.cssText = [
+        `left:${cx}px`, `top:${cy}px`,
+        `background:${colors[i % colors.length]}`,
+        `width:${size}px`, `height:${size}px`,
+        `--px:${(Math.cos(ang)*dist).toFixed(1)}px`,
+        `--py:${(Math.sin(ang)*dist).toFixed(1)}px`,
+        `animation-duration:${0.6+Math.random()*0.6}s`,
+        `animation-delay:${(Math.random()*0.08).toFixed(2)}s`
+      ].join(';');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1300);
+    }
+  }
+
+  /* 7 card silhouettes blast out of the pack when it opens */
+  function spawnBurstCards() {
+    const r  = packOuter.getBoundingClientRect();
+    const cx = r.left + r.width  / 2 - 56;
+    const cy = r.top  + r.height / 2 - 80;
+    /* Trajectories: 6 fan upward/sideways, 1 falls down */
+    const paths = [
+      { bx:-320, by:-190, br:-46, d:0  },
+      { bx:-190, by:-355, br:-26, d:42 },
+      { bx: -42, by:-395, br: -7, d:16 },
+      { bx: 125, by:-375, br: 16, d:58 },
+      { bx: 260, by:-310, br: 34, d:6  },
+      { bx: 355, by:-135, br: 50, d:28 },
+      { bx:  65, by: 270, br:-24, d:48 },
+    ];
+    paths.forEach(({ bx, by, br, d }) => {
+      const el = document.createElement('div');
+      el.className = 'burst-card';
+      el.style.cssText = `left:${cx}px;top:${cy}px;--bx:${bx}px;--by:${by}px;--br:${br}deg;animation-delay:${d}ms;`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1050 + d);
+    });
+  }
+
+  function runTear() {
+    tearing = true;
+    packOuter.classList.add('opening');
+    packOuter.classList.remove('state-1', 'state-2', 'pump');
+    /* Clear any inline style overrides */
+    packOuter.style.transition = '';
+    packOuter.style.transform  = '';
+    packOuter.style.filter     = '';
+    packOuter.style.animation  = 'none';
+    packOuter.style.pointerEvents = 'none';
+
+    /* Brief violent shake burst */
+    setTimeout(() => packOuter.classList.add('shake'), 80);
+
+    /* Halves fly apart */
+    setTimeout(() => {
+      packOuter.classList.remove('shake');
+      packOuter.style.transition = '';
+      packOuter.classList.add('open');
+    }, 530);
+
+    /* Shockwaves + particle burst at tear line */
+    setTimeout(() => {
+      spawnShockwave();
+      const r = packOuter.getBoundingClientRect();
+      burstParticles(r.left + r.width/2, r.top + r.height/2, 32);
+    }, 550);
+
+    /* Cards BLAST out of the pack */
+    setTimeout(spawnBurstCards, 580);
+
+    /* White radial flash */
+    setTimeout(() => flash.classList.add('on'),    700);
+    setTimeout(() => flash.classList.remove('on'), 940);
+
+    /* Collapse pack stage → grids appear → overlay
+       Extended delay so burst cards are visible before overlay darkens everything */
+    setTimeout(() => {
+      packStage.style.transition = 'opacity 0.4s ease, min-height 0.5s ease';
+      packStage.style.opacity    = '0';
+      packStage.style.minHeight  = '0';
+      packStage.style.overflow   = 'hidden';
+      [teamGrid, staffDiv, coachGrid].forEach(el => { if (el) el.style.display = ''; });
+      setTimeout(() => {
+        packStage.style.display = 'none';
+        launchOverlay();
+      }, 700);   /* was 480 — extra 220ms lets burst cards finish flying */
+    }, 1020);
+  }
+
+  /* ════════════════════════════════════════
+     CARD REVEAL OVERLAY
+     Overlay div (#cr-overlay) lives AFTER this script tag in the HTML,
+     so we look it up lazily inside launchOverlay().
+  ════════════════════════════════════════ */
+  let allCards = [];
+
+  function dealGrid() {
+    initCards();
+    /* Staggered fade-in — no bounce */
+    document.querySelectorAll('.tc').forEach((c, i) => {
+      c.style.opacity = '0';
+      c.style.transition = `opacity 0.45s ease ${i * 55}ms`;
+      requestAnimationFrame(() => requestAnimationFrame(() => { c.style.opacity = '1'; }));
+    });
+  }
+
+  function launchOverlay() {
+    /* Lazy lookup — overlay div is after the script tag in DOM */
+    const ov       = document.getElementById('cr-overlay');
+    const cardSlot = document.getElementById('crCardSlot');
+    const nameEl   = document.getElementById('crName');
+    const roleEl   = document.getElementById('crRole');
+    const curNumEl = document.getElementById('crCurNum');
+    const totNumEl = document.getElementById('crTotNum');
+    const nextBtn  = document.getElementById('cr-next');
+    const skipBtn  = document.getElementById('cr-skip-all');
+
+    if (!ov || !cardSlot) { dealGrid(); return; }
+
+    allCards = [...document.querySelectorAll('.tc')];
+    if (totNumEl) totNumEl.textContent = allCards.length;
+    ov.setAttribute('aria-hidden', 'false');
+    ov.classList.add('active');
+
+    /* Corner brackets — draw in from each corner with a staggered delay */
+    const bracketDelays = {tl:0, tr:90, bl:160, br:250};
+    ['tl','tr','bl','br'].forEach(pos => {
+      const b = document.createElement('div');
+      b.className = `cr-bracket cr-bracket-${pos}`;
+      const d = bracketDelays[pos];
+      b.style.animation = `bracketDraw 0.5s ${d}ms cubic-bezier(0.34,1.45,0.64,1) both, bracketPulse 2.5s ${d+520}ms ease-in-out infinite`;
+      cardSlot.appendChild(b);
+    });
+
+    /* Ember emitter — slow ambient drift, not a burst */
+    let emberTimer = null;
+    const TINTS = {
+      'av-v':'rgba(255,208,96,0.2)',  'av-f':'rgba(192,132,252,0.2)',
+      'av-n':'rgba(239,68,68,0.2)',   'av-t':'rgba(168,85,247,0.2)',
+      'av-r':'rgba(59,130,246,0.2)',  'av-a':'rgba(16,185,129,0.2)',
+      'av-tr':'rgba(99,102,241,0.2)'
+    };
+    const EMBER_COLORS = ['#FFD060','#C084FC','#E0A500','#A855F7'];
+
+    function startEmbers() {
+      if (emberTimer) clearInterval(emberTimer);
+      emberTimer = setInterval(() => {
+        const r  = cardSlot.getBoundingClientRect();
+        const e  = document.createElement('div');
+        e.className = 'cr-ember';
+        /* Spawn from the sides and bottom of the card */
+        const side = Math.random() < 0.5 ? 'left' : 'right';
+        const x  = side === 'left'
+          ? r.left - 5 + Math.random() * (r.width * 0.25)
+          : r.right - (r.width * 0.25) + Math.random() * (r.width * 0.25);
+        const y  = r.top + r.height * (0.5 + Math.random() * 0.5);
+        const dx = (Math.random() - 0.5) * 55;
+        const dy = -(50 + Math.random() * 90);
+        const sz = 2 + Math.random() * 3;
+        e.style.cssText = [
+          `left:${x}px`, `top:${y}px`,
+          `background:${EMBER_COLORS[Math.floor(Math.random()*EMBER_COLORS.length)]}`,
+          `--ex:${dx.toFixed(0)}px`, `--ey:${dy.toFixed(0)}px`,
+          `animation-duration:${1.5+Math.random()*1.6}s`,
+          `width:${sz}px`, `height:${sz}px`
+        ].join(';');
+        document.body.appendChild(e);
+        setTimeout(() => e.remove(), 3000);
+      }, 240); /* slower rate — ambient, not a fireworks show */
+    }
+    function stopEmbers() { if (emberTimer) { clearInterval(emberTimer); emberTimer = null; } }
+
+    /* Typewriter effect for the player name */
+    function typewrite(el, className, text) {
+      el.className = className;
+      el.innerHTML = '';
+      const cursor = document.createElement('span');
+      cursor.className = 'cr-cursor';
+      el.appendChild(cursor);
+      let i = 0;
+      const t = setInterval(() => {
+        cursor.insertAdjacentText('beforebegin', text[i] || '');
+        i++;
+        if (i >= text.length) {
+          clearInterval(t);
+          setTimeout(() => cursor.remove(), 1000);
+        }
+      }, 42);
+    }
+
+    let revIdx = 0;
+
+    function showCard(idx) {
+      const card = allCards[idx];
+      if (!card) return;
+      revIdx = idx + 1;
+
+      /* Dynamic spotlight tint from role colour */
+      const av = card.querySelector('.tc-av');
+      let tint = 'rgba(124,58,237,0.2)';
+      if (av) for (const [cls, col] of Object.entries(TINTS)) {
+        if (av.classList.contains(cls)) { tint = col; break; }
+      }
+      ov.style.setProperty('--cr-tint', tint);
+
+      /* Counter */
+      if (curNumEl) {
+        curNumEl.classList.remove('cr-counter-pop');
+        void curNumEl.offsetWidth;
+        curNumEl.textContent = idx + 1;
+        curNumEl.classList.add('cr-counter-pop');
+      }
+
+      /* Name types itself in; role fades in normally */
+      const nm   = card.querySelector('.tc-name');
+      const tags = card.querySelectorAll('.tc-tag');
+      if (nameEl) typewrite(nameEl, 'cr-name cr-name-anim', nm ? nm.textContent.trim() : '');
+      if (roleEl) {
+        roleEl.className   = 'cr-role';
+        roleEl.textContent = [...tags].map(t => t.textContent.trim()).join('  ·  ');
+        void roleEl.offsetWidth;
+        roleEl.className   = 'cr-role cr-role-anim';
+      }
+
+      /* EXIT old card */
+      const prev = cardSlot.querySelector('.tc');
+      if (prev) {
+        prev.style.animation = 'none'; /* kill float/glow */
+        void prev.offsetWidth;
+        prev.style.animation = '';
+        prev.classList.remove('cr-card-in', 'cr-card-glow');
+        prev.classList.add('cr-card-out');
+        setTimeout(() => { if (prev.parentNode) prev.remove(); }, 580);
+      }
+
+      /* ENTER new card (position:absolute — overlaps with exiting card) */
+      const clone = card.cloneNode(true);
+      clone._tcInited = false;
+      clone.classList.remove('dealing','just-revealed','reveal');
+      clone.style.opacity = '';
+      clone.classList.add('cr-card-in', 'cr-card-glow');
+      cardSlot.appendChild(clone);
+      wireFlip(clone);
+
+      /* Two portal rings expand outward when card materializes */
+      const ring1 = document.createElement('div');
+      ring1.className = 'cr-portal-ring';
+      cardSlot.appendChild(ring1);
+      setTimeout(() => { if (ring1.parentNode) ring1.remove(); }, 820);
+
+      const ring2 = document.createElement('div');
+      ring2.className = 'cr-portal-ring b';
+      cardSlot.appendChild(ring2);
+      setTimeout(() => { if (ring2.parentNode) ring2.remove(); }, 1050);
+
+      /* Subtle scan line */
+      const sweep = document.createElement('div');
+      sweep.className = 'cr-scan-sweep';
+      clone.appendChild(sweep);
+      setTimeout(() => { if (sweep.parentNode) sweep.remove(); }, 1400);
+
+      /* After portal-rise finishes, switch to gentle float */
+      setTimeout(() => {
+        if (!clone.parentNode) return;
+        clone.classList.remove('cr-card-in');
+        clone.style.animation = 'crFloat 4.5s ease-in-out infinite, crGlow 2.5s ease-in-out infinite';
+        clone.style.borderRadius = '12px';
+      }, 900);
+
+      /* Particle burst at the card's midpoint when fully revealed */
+      setTimeout(() => {
+        const r = cardSlot.getBoundingClientRect();
+        burstParticles(r.left + r.width/2, r.top + r.height * 0.5, 14);
+      }, 480);
+
+      startEmbers();
+      if (nextBtn) nextBtn.textContent = (idx >= allCards.length - 1) ? 'VIEW FULL ROSTER  ✦' : 'NEXT CARD  →';
+    }
+
+    function closeOv(cb) {
+      stopEmbers();
+      ov.style.transition = 'opacity 0.5s ease';
+      ov.classList.remove('active');
+      ov.setAttribute('aria-hidden', 'true');
+      setTimeout(() => { cardSlot.innerHTML = ''; if (cb) cb(); }, 560);
+    }
+
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      if (revIdx < allCards.length) showCard(revIdx);
+      else closeOv(dealGrid);
+    });
+    if (skipBtn) skipBtn.addEventListener('click', () => {
+      closeOv(() => {
+        initCards();
+        document.querySelectorAll('.tc').forEach(c => { c.style.opacity = '1'; });
+      });
+    });
+
+    showCard(0);
+  }
+
 })();
 
 /* ── SCROLL SPY ── */
@@ -2273,9 +3507,16 @@ document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
 /* ── INTRO: TACTICAL BRIEF ── */
 (function() {
+  const sc = document.getElementById('intro-screen');
+
+  /* Skip intro if already seen */
+  if (localStorage.getItem('shse_introSeen')) {
+    sc.classList.add('gone');
+    return;
+  }
+
   document.body.style.overflow = 'hidden';
 
-  const sc   = document.getElementById('intro-screen');
   const grid = document.getElementById('isGrid');
   const sw   = document.getElementById('isSweep');
   const cns  = ['isCnTL','isCnTR','isCnBL','isCnBR'].map(id => document.getElementById(id));
@@ -2391,8 +3632,11 @@ document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
     setTimeout(() => { sc.classList.add('gone'); }, 140);
   }, 2550);
 
-  // T+2720ms: restore scroll
-  setTimeout(() => { document.body.style.overflow = ''; }, 2720);
+  // T+2720ms: restore scroll + mark intro as seen
+  setTimeout(() => {
+    document.body.style.overflow = '';
+    localStorage.setItem('shse_introSeen', '1');
+  }, 2720);
 })();
 
 /* ── FEATURE 2: SCROLL PROGRESS BAR ── */
@@ -2665,7 +3909,7 @@ function closeMobile() { menu.classList.remove('open'); }
       setTimeout(() => p.remove(), 700);
     }
   }
-  document.querySelectorAll('.player-card, .achievement-card, .sponsor-card').forEach(c => c.addEventListener('mouseenter', burst));
+  document.querySelectorAll('.tc, .achievement-card, .sponsor-card').forEach(c => c.addEventListener('mouseenter', burst));
 })();
 
 /* ── NEW F5: CURSOR SPOTLIGHT ── */
@@ -2757,5 +4001,27 @@ function closeMobile() { menu.classList.remove('open'); }
   document.querySelectorAll('section').forEach(s => obs.observe(s));
 })();
 </script>
+
+<!-- ── CARD REVEAL OVERLAY ── -->
+<div id="cr-overlay" aria-hidden="true">
+  <div class="cr-bg-grid"></div>
+  <div class="cr-scanlines"></div>
+  <div class="cr-spotlight"></div>
+  <div class="cr-counter">
+    <span class="cr-counter-num" id="crCurNum">1</span>
+    <span class="cr-counter-sep">/</span>
+    <span class="cr-counter-tot" id="crTotNum">7</span>
+    <span>&nbsp;&nbsp;CARD</span>
+  </div>
+  <div class="cr-name" id="crName"></div>
+  <div class="cr-role" id="crRole"></div>
+  <div class="cr-card-slot" id="crCardSlot"></div>
+  <div class="cr-btns">
+    <button id="cr-next">NEXT CARD &nbsp;→</button>
+    <button id="cr-skip-all">SKIP ALL</button>
+  </div>
+  <div class="cr-flip-hint">[ TAP CARD TO FLIP ]</div>
+</div>
+
 </body>
 </html>
