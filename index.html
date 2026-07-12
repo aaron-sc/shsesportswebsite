@@ -1113,6 +1113,129 @@
       text-transform: uppercase;
     }
 
+    /* ─── GALLERY ─── */
+    .gallery-status {
+      text-align: center; color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem; letter-spacing: 0.05em;
+      max-width: 520px; margin: 0 auto; display: none;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.6rem;
+    }
+    .album-card {
+      position: relative; aspect-ratio: 4 / 3;
+      border-radius: 10px; overflow: hidden; cursor: pointer;
+      border: 1px solid var(--border);
+      transition: transform 0.35s, border-color 0.35s, box-shadow 0.35s;
+    }
+    .album-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,208,96,0.4);
+      box-shadow: 0 0 40px rgba(255,208,96,0.12);
+    }
+    .album-cover {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      transition: transform 0.5s;
+    }
+    .album-card:hover .album-cover { transform: scale(1.08); }
+    .album-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(7,1,14,0.92) 100%);
+    }
+    .album-info {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 1rem 1.2rem; z-index: 1;
+    }
+    .album-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700; color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .album-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem; color: var(--gold);
+      letter-spacing: 0.15em; margin-top: 0.25rem;
+    }
+
+    /* ─── GALLERY LIGHTBOX ─── */
+    #gallery-lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(7,1,14,0.97);
+      backdrop-filter: blur(10px);
+      padding: 5rem 2rem 2rem;
+      overflow-y: auto;
+    }
+    #gallery-lightbox.open { display: block; }
+    #gl-close {
+      position: fixed; top: 1.4rem; right: 1.6rem; z-index: 2;
+      width: 42px; height: 42px; border-radius: 50%;
+      border: 1px solid var(--border); background: rgba(124,58,237,0.12);
+      color: var(--text); font-size: 1.1rem; cursor: pointer;
+      transition: all 0.25s;
+    }
+    #gl-close:hover { border-color: var(--gold); color: var(--gold); transform: rotate(90deg); }
+
+    #gl-album-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      text-align: center; margin-bottom: 2.2rem;
+      color: var(--text);
+    }
+    #gl-album-grid {
+      max-width: 1160px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+    }
+    .gl-thumb {
+      aspect-ratio: 1 / 1; border-radius: 6px; cursor: pointer;
+      background-size: cover; background-position: center;
+      border: 1px solid var(--border);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+    .gl-thumb:hover { transform: scale(1.04); border-color: var(--gold); }
+
+    #gl-photo-view {
+      display: none;
+      position: fixed; inset: 0; z-index: 1;
+      align-items: center; justify-content: center;
+      padding: 3rem;
+    }
+    #gl-photo-img {
+      max-width: min(90vw, 1100px); max-height: 78vh;
+      object-fit: contain; border-radius: 6px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    }
+    #gl-back {
+      position: fixed; top: 1.5rem; left: 1.6rem;
+      background: none; border: none; color: var(--muted);
+      font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.15em; cursor: pointer;
+    }
+    #gl-back:hover { color: var(--gold); }
+    #gl-prev, #gl-next {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      border: 1px solid var(--border); background: rgba(124,58,237,0.12);
+      color: var(--text); font-size: 1.5rem; cursor: pointer;
+      transition: all 0.25s;
+    }
+    #gl-prev:hover, #gl-next:hover { border-color: var(--gold); color: var(--gold); }
+    #gl-prev { left: 1.6rem; }
+    #gl-next { right: 1.6rem; }
+    #gl-photo-caption {
+      position: fixed; bottom: 1.6rem; left: 0; right: 0;
+      text-align: center; color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem; letter-spacing: 0.1em;
+    }
+
     /* ─── DONORS ─── */
     #donors { background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%); }
 
@@ -1948,6 +2071,8 @@
       .mv-grid    { grid-template-columns: 1fr; gap: 2rem; }
       .team-grid  { grid-template-columns: repeat(3, 1fr); }
       .coaches-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      #gl-album-grid { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 640px) {
       nav { padding: 1rem 1.5rem; }
@@ -1956,6 +2081,10 @@
       .achievements { grid-template-columns: 1fr; }
       .team-grid, .coaches-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
       .sponsors-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      #gl-album-grid { grid-template-columns: repeat(2, 1fr); }
+      #gl-prev, #gl-next { width: 38px; height: 38px; font-size: 1.2rem; }
+      #gl-prev { left: 0.6rem; } #gl-next { right: 0.6rem; }
       section { padding: 5rem 1.5rem; }
       .tab { font-size: 0.65rem; padding: 0.45rem 0.85rem; }
     }
@@ -2112,6 +2241,7 @@
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#team">Roster</a></li>
+      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#sponsors">Sponsors</a></li>
       <li><a href="#donors">Donors</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -2125,6 +2255,7 @@
   <div class="mobile-menu" id="mobileMenu">
     <a href="#about"    onclick="closeMobile()">About</a>
     <a href="#team"     onclick="closeMobile()">Roster</a>
+    <a href="#gallery"  onclick="closeMobile()">Gallery</a>
     <a href="#sponsors" onclick="closeMobile()">Sponsors</a>
     <a href="#donors"   onclick="closeMobile()">Donors</a>
     <a href="#contact"  onclick="closeMobile()">Contact</a>
@@ -2592,6 +2723,20 @@
 
       </div>
 
+    </div>
+  </section>
+
+  <!-- ── GALLERY ── -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">// Behind The Scenes //</span>
+        <h2 class="section-title">PHOTO <span class="accent">GALLERY</span></h2>
+        <div class="section-rule"><div class="rule-diamond"></div></div>
+      </div>
+
+      <p id="gallery-status" class="gallery-status">Loading albums…</p>
+      <div id="gallery-grid" class="gallery-grid"></div>
     </div>
   </section>
 
@@ -4000,6 +4145,160 @@ function closeMobile() { menu.classList.remove('open'); }
   }, { threshold: [0.3] });
   document.querySelectorAll('section').forEach(s => obs.observe(s));
 })();
+
+/* ── PHOTO GALLERY ──
+   Albums are just folders under images/gallery/ in this repo on GitHub.
+   Create a new folder there and drop photos into it — this reads the repo
+   listing live via the GitHub API, so no code changes are ever needed. */
+(function() {
+  const REPO = 'aaron-sc/shsesportswebsite';
+  const GALLERY_PATH = 'images/gallery';
+  const API_BASE = `https://api.github.com/repos/${REPO}/contents/${GALLERY_PATH}`;
+  const IMG_RE = /\.(jpe?g|png|gif|webp|avif)$/i;
+  const CACHE_KEY = 'sentinel-gallery-cache-v1';
+  const CACHE_TTL = 5 * 60 * 1000;
+
+  const grid   = document.getElementById('gallery-grid');
+  const status = document.getElementById('gallery-status');
+  if (!grid) return;
+
+  async function fetchJSON(url) {
+    const res = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!res.ok) throw new Error('GitHub API ' + res.status);
+    return res.json();
+  }
+
+  async function loadAlbums() {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+      try {
+        const { time, albums } = JSON.parse(cached);
+        if (Date.now() - time < CACHE_TTL) return albums;
+      } catch (e) {}
+    }
+
+    const topLevel = await fetchJSON(API_BASE);
+    const dirs = topLevel.filter(e => e.type === 'dir');
+
+    const albums = await Promise.all(dirs.map(async dir => {
+      const files = await fetchJSON(dir.url);
+      const images = files
+        .filter(f => f.type === 'file' && IMG_RE.test(f.name))
+        .map(f => ({ name: f.name, url: f.download_url }))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      return { name: dir.name, images };
+    }));
+
+    const populated = albums.filter(a => a.images.length > 0);
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), albums: populated }));
+    return populated;
+  }
+
+  function prettify(name) {
+    return name.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function render(albums) {
+    if (!albums.length) {
+      status.textContent = 'No albums yet — add a folder inside images/gallery on GitHub and drop photos into it to create one.';
+      status.style.display = 'block';
+      return;
+    }
+    status.style.display = 'none';
+
+    grid.innerHTML = albums.map((a, i) => `
+      <div class="album-card reveal" style="transition-delay:${(i % 6) * 0.06}s" data-album="${i}">
+        <div class="album-cover" style="background-image:url('${a.images[0].url}')"></div>
+        <div class="album-info">
+          <div class="album-name">${prettify(a.name)}</div>
+          <div class="album-count">${a.images.length} PHOTO${a.images.length === 1 ? '' : 'S'}</div>
+        </div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.album-card').forEach(card => {
+      card.addEventListener('click', () => openAlbum(albums[+card.dataset.album]));
+    });
+    grid.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  }
+
+  loadAlbums()
+    .then(render)
+    .catch(err => {
+      console.error('Gallery load failed:', err);
+      status.textContent = 'Gallery unavailable right now — please refresh in a bit.';
+      status.style.display = 'block';
+    });
+
+  /* ── lightbox ── */
+  const lb           = document.getElementById('gallery-lightbox');
+  const glTitle       = document.getElementById('gl-album-title');
+  const glGrid         = document.getElementById('gl-album-grid');
+  const albumView     = document.getElementById('gl-album-view');
+  const photoView      = document.getElementById('gl-photo-view');
+  const photoImg      = document.getElementById('gl-photo-img');
+  const photoCaption  = document.getElementById('gl-photo-caption');
+  let currentAlbum = null;
+  let currentIndex = 0;
+
+  function openAlbum(album) {
+    currentAlbum = album;
+    glTitle.textContent = prettify(album.name);
+    glGrid.innerHTML = album.images.map((img, i) => `
+      <div class="gl-thumb" data-i="${i}" style="background-image:url('${img.url}')"></div>
+    `).join('');
+    glGrid.querySelectorAll('.gl-thumb').forEach(t => {
+      t.addEventListener('click', () => openPhoto(+t.dataset.i));
+    });
+    albumView.style.display = 'block';
+    photoView.style.display = 'none';
+    lb.classList.add('open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function openPhoto(i) {
+    currentIndex = i;
+    const img = currentAlbum.images[i];
+    photoImg.src = img.url;
+    photoCaption.textContent = `${prettify(currentAlbum.name)} — ${i + 1} / ${currentAlbum.images.length}`;
+    albumView.style.display = 'none';
+    photoView.style.display = 'flex';
+  }
+
+  function backToAlbum() {
+    photoView.style.display = 'none';
+    albumView.style.display = 'block';
+  }
+
+  function closeLightbox() {
+    lb.classList.remove('open');
+    lb.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function step(delta) {
+    openPhoto((currentIndex + delta + currentAlbum.images.length) % currentAlbum.images.length);
+  }
+
+  document.getElementById('gl-close').addEventListener('click', closeLightbox);
+  document.getElementById('gl-back').addEventListener('click', backToAlbum);
+  document.getElementById('gl-prev').addEventListener('click', () => step(-1));
+  document.getElementById('gl-next').addEventListener('click', () => step(1));
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      if (photoView.style.display === 'flex') backToAlbum();
+      else closeLightbox();
+    }
+    if (photoView.style.display === 'flex') {
+      if (e.key === 'ArrowLeft') step(-1);
+      if (e.key === 'ArrowRight') step(1);
+    }
+  });
+})();
 </script>
 
 <!-- ── CARD REVEAL OVERLAY ── -->
@@ -4021,6 +4320,24 @@ function closeMobile() { menu.classList.remove('open'); }
     <button id="cr-skip-all">SKIP ALL</button>
   </div>
   <div class="cr-flip-hint">[ TAP CARD TO FLIP ]</div>
+</div>
+
+<!-- ── GALLERY LIGHTBOX ── -->
+<div id="gallery-lightbox" aria-hidden="true">
+  <button id="gl-close" aria-label="Close gallery">✕</button>
+
+  <div id="gl-album-view">
+    <h3 id="gl-album-title"></h3>
+    <div id="gl-album-grid"></div>
+  </div>
+
+  <div id="gl-photo-view">
+    <button id="gl-back" aria-label="Back to album">‹ ALBUM</button>
+    <button id="gl-prev" aria-label="Previous photo">‹</button>
+    <img id="gl-photo-img" src="" alt="">
+    <button id="gl-next" aria-label="Next photo">›</button>
+    <div id="gl-photo-caption"></div>
+  </div>
 </div>
 
 </body>
