@@ -2293,6 +2293,7 @@
       <span>Regular Season 2025–26</span><span class="ticker-star">✦</span>
       <span>2ND</span><span class="ticker-star">✦</span>
       <span>State Finals 2025–26</span><span class="ticker-star">✦</span>
+      <span>TOP 16</span><span class="ticker-star">✦</span>
       <span>Nationals 2026</span><span class="ticker-star">✦</span>
       <span>Boise, Idaho</span><span class="ticker-star">✦</span>
     </div>
@@ -2355,7 +2356,7 @@
         <div class="story-text reveal">
           <p>Sentinel HS Esports was started by <strong>Aaron Santa Cruz</strong>, a former University of Montana VALORANT player, alongside <strong>Head Coach Travis Benson</strong> (MCPS staff). Unofficially beginning in <strong>2024</strong>, the program was mostly participating in VALORANT's Premier feature — an in-game tournament system.</p>
           <p>After a restart in <strong>January 2025</strong>, the program officially began. With VALORANT as the main title and Aaron's competitive experience, the team entered the <strong>Montana High School Championship Series (MHSCS)</strong>. Facing teams from across Montana, Sentinel finished <strong>1st in the regular season</strong>, then secured <strong>3rd place</strong> at the playoff finals.</p>
-          <p>In the <strong>2025–2026 season</strong>, the team continued to grow — finishing <strong>2nd in the regular season</strong> and going on to compete at <strong>State, held at the University of Montana</strong>, where they earned <strong>2nd place</strong>. The team is now headed to <strong>Nationals in July</strong>, competing in <strong>Boise, Idaho</strong>.</p>
+          <p>In the <strong>2025–2026 season</strong>, the team continued to grow — finishing <strong>2nd in the regular season</strong> and going on to compete at <strong>State, held at the University of Montana</strong>, where they earned <strong>2nd place</strong>. That run carried Sentinel to <strong>Nationals in Boise, Idaho</strong>, where the team fought into the playoff bracket and competed among the <strong>top 16 high school VALORANT teams in the entire country</strong>.</p>
         </div>
 
         <div class="achievements reveal" style="transition-delay:.15s">
@@ -2382,9 +2383,9 @@
         </div>
 
         <div class="nationals-banner reveal" style="transition-delay:.28s">
-          <div class="nationals-badge">// Next Up //</div>
-          <div class="nationals-title">NATIONALS 2026</div>
-          <div class="nationals-sub">July 2026 &nbsp;·&nbsp; Boise, Idaho</div>
+          <div class="nationals-badge">// National Stage //</div>
+          <div class="nationals-title">TOP 16 NATIONALLY</div>
+          <div class="nationals-sub">2026 Nationals Playoffs &nbsp;·&nbsp; Boise, Idaho</div>
         </div>
       </div>
     </div>
@@ -4149,8 +4150,10 @@ function closeMobile() { menu.classList.remove('open'); }
 /* ── PHOTO GALLERY ──
    Albums are just folders under images/gallery/ in this repo on GitHub.
    Create a new folder there and drop photos into it — this reads the repo
-   listing live via the GitHub API, so no code changes are ever needed. */
-(function() {
+   listing live via the GitHub API, so no code changes are ever needed.
+   Wrapped in DOMContentLoaded because #gallery-lightbox lives after this
+   script tag in the HTML (same reason the card-reveal overlay above does). */
+document.addEventListener('DOMContentLoaded', function() {
   const REPO = 'aaron-sc/shsesportswebsite';
   const GALLERY_PATH = 'images/gallery';
   const API_BASE = `https://api.github.com/repos/${REPO}/contents/${GALLERY_PATH}`;
@@ -4298,7 +4301,7 @@ function closeMobile() { menu.classList.remove('open'); }
       if (e.key === 'ArrowRight') step(1);
     }
   });
-})();
+});
 </script>
 
 <!-- ── CARD REVEAL OVERLAY ── -->
